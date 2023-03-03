@@ -99,6 +99,13 @@ mod tests {
 
     #[test]
     fn check_create_list() {
+        let link = list_to_linkedlist(merge_two_lists(
+            to_list(vec![1, 2, 4]),
+            to_list(vec![1, 3, 4]),
+        ));
+        let expect_link: LinkedList<i32> = LinkedList::from([1, 1, 2, 3, 4, 4]);
+        assert_eq!(link, expect_link);
+
         assert_eq!(
             merge_two_lists(to_list(vec![1, 2, 4]), to_list(vec![1, 3, 4])),
             to_list(vec![1, 1, 2, 3, 4, 4])
