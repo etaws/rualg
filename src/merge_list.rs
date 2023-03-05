@@ -92,6 +92,30 @@ pub fn list_to_linkedlist(l: Option<Box<ListNode>>) -> LinkedList<i32> {
     result
 }
 
+pub fn duplicated_list(l1: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut output = None;
+
+    let mut next_node_pos = &mut output;
+    let mut l1_opt = l1;
+
+    let mut i: usize = 0;
+    while let Some(mut l1) = l1_opt {
+        // 指针移动到下个节点
+        l1_opt = l1.next.take();
+
+        if i == 0 {
+            *next_node_pos = Some(l1);
+        } else if l1.val != next_node_pos.as_ref().unwrap().val {
+            next_node_pos = &mut next_node_pos.as_mut().unwrap().next;
+            *next_node_pos = Some(l1);
+        }
+
+        i += 1;
+    }
+
+    output
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -109,6 +133,15 @@ mod tests {
         assert_eq!(
             merge_two_lists(to_list(vec![1, 2, 4]), to_list(vec![1, 3, 4])),
             to_list(vec![1, 1, 2, 3, 4, 4])
+        );
+    }
+
+    #[test]
+    fn check_duplicated_list() {
+        // duplicated_list(to_list(vec![1, 1, 2, 3, 4, 4]));
+        assert_eq!(
+            duplicated_list(to_list(vec![1, 1, 2, 3, 4, 4])),
+            to_list(vec![1, 2, 3, 4])
         );
     }
 }
