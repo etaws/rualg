@@ -98,6 +98,8 @@ pub fn duplicated_list(l1: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     let mut next_node_pos = &mut output;
     let mut l1_opt = l1;
 
+    let mut val: i32 = l1_opt.as_ref().unwrap().val;
+
     let mut i: usize = 0;
     while let Some(mut l1) = l1_opt {
         // 指针移动到下个节点
@@ -105,7 +107,8 @@ pub fn duplicated_list(l1: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 
         if i == 0 {
             *next_node_pos = Some(l1);
-        } else if l1.val != next_node_pos.as_ref().unwrap().val {
+        } else if val != l1.val {
+            val = l1.val;
             next_node_pos = &mut next_node_pos.as_mut().unwrap().next;
             *next_node_pos = Some(l1);
         }
@@ -118,7 +121,6 @@ pub fn duplicated_list(l1: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
     #[test]
