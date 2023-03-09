@@ -119,6 +119,21 @@ pub fn duplicated_list(l1: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     output
 }
 
+pub fn reverse_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut output = None;
+    let next_node_pos = &mut output;
+
+    let mut head_opt = head;
+
+    while let Some(mut head) = head_opt {
+        head_opt = head.next.take();
+        head.next = next_node_pos.take();
+        *next_node_pos = Some(head);
+    }
+
+    output
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -144,6 +159,14 @@ mod tests {
         assert_eq!(
             duplicated_list(to_list(vec![1, 1, 2, 3, 4, 4])),
             to_list(vec![1, 2, 3, 4])
+        );
+    }
+
+    #[test]
+    fn check_reverse_list() {
+        assert_eq!(
+            reverse_list(to_list(vec![1, 2, 3, 4, 5])),
+            to_list(vec![5, 4, 3, 2, 1])
         );
     }
 }
