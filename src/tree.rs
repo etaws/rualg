@@ -127,6 +127,34 @@ pub fn preorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
     re
 }
 
+pub fn postorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+    let mut re: Vec<i32> = Vec::new();
+    if root.is_none() {
+        return re;
+    }
+
+    let mut stack: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
+    let mut result: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
+
+    stack.push(root);
+    while let Some(Some(n)) = stack.pop() {
+        if n.borrow().left.is_some() {
+            stack.push(n.borrow().left.clone());
+        }
+        if n.borrow().right.is_some() {
+            stack.push(n.borrow().right.clone());
+        }
+
+        result.push(Some(n));
+    }
+
+    while let Some(Some(node)) = result.pop() {
+        re.push(node.borrow().val);
+    }
+
+    re
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -146,6 +174,15 @@ mod tests {
         assert_eq!(
             preorder_traversal(tree![1, 2, 3, 4, 5, 6, 7]),
             vec![1, 2, 4, 5, 3, 6, 7]
+        );
+    }
+
+    #[test]
+    fn test_postorder_traversal() {
+        assert_eq!(postorder_traversal(tree![1, null, 2, 3]), vec![3, 2, 1]);
+        assert_eq!(
+            postorder_traversal(tree![1, 2, 3, 4, 5, 6, 7]),
+            vec![4, 5, 2, 6, 7, 3, 1]
         );
     }
 }
