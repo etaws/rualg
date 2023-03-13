@@ -73,15 +73,42 @@ pub fn inorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
     r
 }
 
+pub fn inorder_traversal_p(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+    let mut re: Vec<i32> = Vec::new();
+    if root.is_none() {
+        return re;
+    }
+
+    let mut stack = Vec::new();
+
+    let mut r = root;
+
+    while r.is_some() || !stack.is_empty() {
+        while let Some(n) = r {
+            stack.push(n.clone());
+            r = n.borrow().left.clone();
+        }
+
+        r = stack.pop();
+
+        if let Some(n) = r {
+            re.push(n.borrow().val);
+            r = n.borrow().right.clone();
+        }
+    }
+
+    re
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_inorder_traversal() {
-        assert_eq!(inorder_traversal(tree![1, null, 2, 3]), vec![1, 3, 2]);
+        assert_eq!(inorder_traversal_p(tree![1, null, 2, 3]), vec![1, 3, 2]);
         assert_eq!(
-            inorder_traversal(tree![1, 2, 3, 4, 5, 6, 7]),
+            inorder_traversal_p(tree![1, 2, 3, 4, 5, 6, 7]),
             vec![4, 2, 5, 1, 6, 3, 7]
         );
     }
