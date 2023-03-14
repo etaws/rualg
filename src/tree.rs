@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::VecDeque;
 use std::rc::Rc;
 
 // Definition for a binary tree node.
@@ -21,7 +22,6 @@ impl TreeNode {
 }
 
 pub fn to_tree(vec: Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-    use std::collections::VecDeque;
     let head = Some(Rc::new(RefCell::new(TreeNode::new(vec[0].unwrap()))));
     let mut queue = VecDeque::new();
     queue.push_back(head.as_ref().unwrap().clone());
@@ -155,6 +155,40 @@ pub fn postorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
     re
 }
 
+pub fn max_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    if root.is_none() {
+        return 0;
+    }
+
+    let mut re: VecDeque<Option<Rc<RefCell<TreeNode>>>> = VecDeque::new();
+    re.push_front(root);
+
+    let mut current_size = 1;
+    let mut r = 0;
+
+    while !re.is_empty() {
+        let mut next_size = 0;
+        for _i in 0..current_size {
+            if let Some(Some(n)) = re.pop_back() {
+                if n.borrow().left.is_some() {
+                    re.push_front(n.borrow().left.clone());
+                    next_size += 1;
+                }
+                if n.borrow().right.is_some() {
+                    re.push_front(n.borrow().right.clone());
+                    next_size += 1;
+                }
+            }
+        }
+
+        current_size = next_size;
+
+        r += 1;
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -184,5 +218,10 @@ mod tests {
             postorder_traversal(tree![1, 2, 3, 4, 5, 6, 7]),
             vec![4, 5, 2, 6, 7, 3, 1]
         );
+    }
+
+    #[test]
+    fn test_max_depth() {
+        assert_eq!(max_depth(tree![3, 9, 20, null, null, 15, 7]), 3);
     }
 }
