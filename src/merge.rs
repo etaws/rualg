@@ -1,3 +1,52 @@
+pub fn merge(nums1: &mut [i32], m: i32, nums2: &mut [i32], n: i32) {
+    if n == 0 {
+        return;
+    }
+
+    if m == 0 {
+        for (j, n) in nums2.iter().enumerate() {
+            nums1[j] = *n;
+        }
+        return;
+    }
+
+    let mut i: usize = (m - 1) as usize;
+    let mut j: usize = (n - 1) as usize;
+
+    let mut k: usize = (m + n - 1) as usize;
+
+    let mut end_1 = false;
+    loop {
+        if nums1[i] > nums2[j] {
+            nums1[k] = nums1[i];
+            if i == 0 {
+                end_1 = true;
+                break;
+            }
+            i -= 1;
+        } else {
+            nums1[k] = nums2[j];
+            if j == 0 {
+                break;
+            }
+            j -= 1;
+        }
+
+        if k == 0 {
+            break;
+        }
+        k -= 1;
+    }
+
+    if k != 0 && end_1 {
+        let mut s = 0;
+        while s < k {
+            nums1[s] = nums2[s];
+            s += 1;
+        }
+    }
+}
+
 pub fn merge_two(a: &mut [i32], a_len: usize, b: &[i32]) {
     assert!(a.len() >= (a_len + b.len()));
 
@@ -79,6 +128,28 @@ mod tests {
         merge_two(&mut a, 0, &b);
 
         let c: [i32; 1] = [1];
+        assert_eq!(a, c);
+    }
+
+    #[test]
+    fn check_merge_4() {
+        let mut a = vec![2, 5, 6, 0, 0, 0];
+        let mut b = vec![1, 2, 3];
+
+        merge(&mut a, 3, &mut b, 3);
+
+        let c = vec![1, 2, 2, 3, 5, 6];
+        assert_eq!(a, c);
+    }
+
+    #[test]
+    fn check_merge_5() {
+        let mut a = vec![1, 0];
+        let mut b = vec![2];
+
+        merge(&mut a, 1, &mut b, 1);
+
+        let c = vec![1, 2];
         assert_eq!(a, c);
     }
 }
