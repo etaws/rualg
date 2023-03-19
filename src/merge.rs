@@ -76,7 +76,7 @@ pub fn merge_two(a: &mut [i32], a_len: usize, b: &[i32]) {
                 a_end = true;
             }
             if i > 0 {
-                i -= 1;
+                i = i.saturating_sub(1);
             }
         } else if a_end || (a[i] <= b[j]) {
             a[current] = b[j];
@@ -84,7 +84,7 @@ pub fn merge_two(a: &mut [i32], a_len: usize, b: &[i32]) {
                 b_end = true;
             }
             if j > 0 {
-                j -= 1;
+                j = j.saturating_sub(1);
             }
         }
 

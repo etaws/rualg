@@ -83,7 +83,7 @@ pub fn list_to_linkedlist(l: Option<Box<ListNode>>) -> LinkedList<i32> {
     let mut result = LinkedList::new();
     let mut curr = l;
 
-    while curr != None {
+    while curr.is_some() {
         let inner = curr.unwrap();
         result.push_back(inner.val);
         curr = inner.next;
