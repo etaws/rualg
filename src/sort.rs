@@ -11,6 +11,9 @@ pub fn qsort(a: &mut [usize], left: usize, right: usize) {
         return;
     }
 
+    let p: usize = 232834 % (right - left) + left;
+    a.swap(left, p);
+
     let mut i = left;
     let mut j = right + 1;
 
