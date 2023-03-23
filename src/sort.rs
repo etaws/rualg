@@ -19,7 +19,35 @@ pub fn bubbling_sort(a: &mut [usize]) {
     }
 }
 
-pub fn insertion_sort(a: &mut Vec<usize>) {
+pub fn select_sort(a: &mut [usize]) {
+    if a.len() <= 1 {
+        return;
+    }
+
+    let mut i = a.len() - 1;
+    while i > 0 {
+        let c = a[i];
+
+        let mut j = 1;
+        let mut max_i = 0;
+        while j < i {
+            if a[max_i] < a[j] {
+                max_i = j;
+            }
+
+            j += 1;
+        }
+
+        if c < a[max_i] {
+            a[i] = a[max_i];
+            a[max_i] = c;
+        }
+
+        i -= 1;
+    }
+}
+
+pub fn insertion_sort(a: &mut [usize]) {
     if a.len() <= 1 {
         return;
     }
@@ -46,6 +74,33 @@ pub fn insertion_sort(a: &mut Vec<usize>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn check_select_sort() {
+        diff_select_sort(
+            &mut vec![3, 5, 8, 10, 0, 0, 0, 0, 0, 0],
+            &vec![0, 0, 0, 0, 0, 0, 3, 5, 8, 10],
+        );
+
+        diff_select_sort(
+            &mut vec![26, 5, 37, 1, 61, 11, 59, 15, 48, 19],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+        );
+
+        diff_select_sort(
+            &mut vec![5, 1, 26, 37, 61, 11, 15, 19, 59, 48],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+        );
+
+        diff_select_sort(
+            &mut vec![11, 7, 20, 9, 18, 21, 19, 8, 10, 22],
+            &vec![7, 8, 9, 10, 11, 18, 19, 20, 21, 22],
+        );
+
+        diff_select_sort(&mut vec![1, 5], &vec![1, 5]);
+
+        diff_select_sort(&mut vec![0], &vec![0]);
+    }
 
     #[test]
     fn check_bubbling_sort() {
@@ -89,6 +144,11 @@ mod tests {
 
     fn diff_bubbling_sort(sorted: &mut Vec<usize>, expected: &Vec<usize>) {
         bubbling_sort(sorted);
+        assert_eq!(sorted, expected);
+    }
+
+    fn diff_select_sort(sorted: &mut Vec<usize>, expected: &Vec<usize>) {
+        select_sort(sorted);
         assert_eq!(sorted, expected);
     }
 }
