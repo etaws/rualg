@@ -1,3 +1,52 @@
+pub fn quick_sort(a: &mut [usize]) {
+    if a.len() <= 1 {
+        return;
+    }
+
+    qsort(a, 0, a.len() - 1);
+}
+
+pub fn qsort(a: &mut [usize], left: usize, right: usize) {
+    if left >= right {
+        return;
+    }
+
+    let mut i = left;
+    let mut j = right + 1;
+
+    loop {
+        loop {
+            i += 1;
+            if (i == right) || (a[i] >= a[left]) {
+                break;
+            }
+        }
+
+        loop {
+            j -= 1;
+            if (j == left) || (a[left] >= a[j]) {
+                break;
+            }
+        }
+
+        if i < j {
+            a.swap(i, j);
+        }
+
+        if i >= j {
+            break;
+        }
+    }
+    a.swap(left, j);
+
+    if left + 1 < j {
+        qsort(a, left, j - 1);
+    }
+    if j + 1 < right {
+        qsort(a, j + 1, right);
+    }
+}
+
 pub fn bubbling_sort(a: &mut [usize]) {
     if a.len() <= 1 {
         return;
@@ -166,6 +215,37 @@ mod tests {
         diff_sort(&mut vec![1, 5], &vec![1, 5], insertion_sort);
 
         diff_sort(&mut vec![0], &vec![0], insertion_sort);
+    }
+
+    #[test]
+    fn check_quick_sort() {
+        diff_sort(
+            &mut vec![3, 5, 8, 10, 0, 0, 0, 0, 0, 0],
+            &vec![0, 0, 0, 0, 0, 0, 3, 5, 8, 10],
+            quick_sort,
+        );
+
+        diff_sort(
+            &mut vec![5, 1, 26, 37, 61, 11, 15, 19, 59, 48],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+            quick_sort,
+        );
+
+        diff_sort(
+            &mut vec![26, 5, 37, 1, 61, 11, 59, 15, 48, 19],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+            quick_sort,
+        );
+
+        diff_sort(
+            &mut vec![11, 7, 20, 9, 18, 21, 19, 8, 10, 22],
+            &vec![7, 8, 9, 10, 11, 18, 19, 20, 21, 22],
+            quick_sort,
+        );
+
+        diff_sort(&mut vec![1, 5], &vec![1, 5], quick_sort);
+
+        diff_sort(&mut vec![0], &vec![0], quick_sort);
     }
 
     fn diff_sort(sorted: &mut Vec<usize>, expected: &Vec<usize>, sort_fn: fn(a: &mut [usize])) {
