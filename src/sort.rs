@@ -1,3 +1,75 @@
+pub fn adjust_heap(a: &mut [usize], root: usize, len: usize) {
+    if a.len() <= 1 {
+        return;
+    }
+
+    if root >= a.len() {
+        return;
+    }
+
+    let mut i = root;
+
+    while i < len {
+        let left = (i + 1) * 2 - 1;
+        let right = (i + 1) * 2 + 1 - 1;
+
+        if left >= len {
+            break;
+        }
+
+        if right >= len {
+            if a[left] >= a[i] {
+                a.swap(i, left);
+            }
+            break;
+        }
+
+        if (a[i] >= a[left]) && (a[i] >= a[right]) {
+            break;
+        }
+
+        if a[left] >= a[right] {
+            a.swap(i, left);
+            i = left;
+        } else {
+            a.swap(i, right);
+            i = right;
+        }
+    }
+}
+
+pub fn heap_sort(a: &mut [usize]) {
+    if a.len() <= 1 {
+        return;
+    }
+
+    let mut i = a.len() / 2 - 1;
+
+    loop {
+        if i == 0 {
+            break;
+        }
+
+        adjust_heap(a, i, a.len());
+
+        i -= 1;
+    }
+
+    adjust_heap(a, 0, a.len());
+
+    let mut j = a.len() - 1;
+    loop {
+        if j == 0 {
+            break;
+        }
+        a.swap(0, j);
+
+        adjust_heap(a, 0, j);
+
+        j -= 1;
+    }
+}
+
 pub fn quick_sort(a: &mut [usize]) {
     if a.len() <= 1 {
         return;
@@ -147,6 +219,11 @@ mod tests {
         check_sort_suits(quick_sort);
     }
 
+    #[test]
+    fn check_heap_sort() {
+        check_sort_suits(heap_sort);
+    }
+
     fn check_sort_suits(sort_fn: fn(a: &mut [usize])) {
         diff_sort(
             &mut vec![3, 5, 8, 10, 0, 0, 0, 0, 0, 0],
@@ -180,5 +257,16 @@ mod tests {
     fn diff_sort(sorted: &mut Vec<usize>, expected: &Vec<usize>, sort_fn: fn(a: &mut [usize])) {
         sort_fn(sorted);
         assert_eq!(sorted, expected);
+    }
+
+    #[test]
+    fn check_adjust_heap() {
+        let mut a = vec![26, 7, 72, 6, 4, 63, 15, 8];
+        let b = vec![72, 7, 63, 6, 4, 26, 15, 8];
+
+        let n = a.len();
+        adjust_heap(&mut a, 0, n);
+
+        assert_eq!(a, b);
     }
 }
