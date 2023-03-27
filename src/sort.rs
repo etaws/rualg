@@ -1,3 +1,65 @@
+pub fn merge_two(a: &mut [usize], b: &mut [usize], i: usize, m: usize, n: usize) {
+    let len = a.len();
+
+    let mut s = i;
+    let mut t = m + 1;
+
+    let mut j = i;
+
+    while s <= m && t <= n {
+        if (s >= len) || (t >= len) {
+            break;
+        }
+        if a[s] < a[t] {
+            b[j] = a[s];
+            s += 1;
+        } else {
+            b[j] = a[t];
+            t += 1;
+        }
+
+        j += 1;
+    }
+
+    while (s <= m) && (s < len) {
+        b[j] = a[s];
+        j += 1;
+        s += 1;
+    }
+
+    while (t <= n) && (t < len) {
+        b[j] = a[t];
+        j += 1;
+        t += 1;
+    }
+}
+
+pub fn merge_pass(a: &mut [usize], b: &mut [usize], size: usize) {
+    let mut i = 0;
+    loop {
+        merge_two(a, b, i, i + size - 1, i + size * 2 - 1);
+
+        if (i + size * 2) >= a.len() {
+            break;
+        }
+
+        i += size * 2;
+    }
+}
+
+pub fn merge_sort(a: &mut [usize]) {
+    let mut b = vec![0; a.len()];
+
+    let mut size = 1;
+    while size < a.len() {
+        merge_pass(a, &mut b, size);
+        size *= 2;
+
+        merge_pass(&mut b, a, size);
+        size *= 2;
+    }
+}
+
 pub fn adjust_heap(a: &mut [usize], root: usize, len: usize) {
     if a.len() <= 1 {
         return;
@@ -224,6 +286,11 @@ mod tests {
         check_sort_suits(heap_sort);
     }
 
+    #[test]
+    fn check_merge_sort() {
+        check_sort_suits(merge_sort);
+    }
+
     fn check_sort_suits(sort_fn: fn(a: &mut [usize])) {
         diff_sort(
             &mut vec![3, 5, 8, 10, 0, 0, 0, 0, 0, 0],
@@ -268,5 +335,53 @@ mod tests {
         adjust_heap(&mut a, 0, n);
 
         assert_eq!(a, b);
+    }
+
+    #[test]
+    fn check_merge_two_1() {
+        let mut a = vec![1, 11, 15, 37, 59, 61, 5, 19, 26, 48];
+        let mut b = vec![0; a.len()];
+
+        let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
+
+        merge_two(&mut a, &mut b, 0, 5, 9);
+        assert_eq!(b, c);
+    }
+
+    #[test]
+    fn check_merge_two_2() {
+        let mut a = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
+        let mut b = vec![0; a.len()];
+
+        let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
+
+        merge_two(&mut a, &mut b, 0, 9, 9);
+        assert_eq!(b, c);
+    }
+
+    #[test]
+    fn check_merge_two_3() {
+        let mut a = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
+        let mut b = vec![0; a.len()];
+
+        let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
+
+        merge_two(&mut a, &mut b, 0, 0, 9);
+        assert_eq!(b, c);
+    }
+
+    #[test]
+    fn check_merge_pass() {
+        let mut a = vec![26, 5, 37, 1, 61, 11, 59, 15, 48, 19];
+        let mut b = vec![0; a.len()];
+
+        merge_pass(&mut a, &mut b, 1);
+
+        let c_1 = vec![5, 26, 1, 37, 11, 61, 15, 59, 19, 48];
+        assert_eq!(b, c_1);
+
+        merge_pass(&mut b, &mut a, 2);
+        let c_2 = vec![1, 5, 26, 37, 11, 15, 59, 61, 19, 48];
+        assert_eq!(a, c_2);
     }
 }
