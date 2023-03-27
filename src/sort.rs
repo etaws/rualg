@@ -1,4 +1,4 @@
-pub fn merge_two(a: &mut [usize], b: &mut [usize], i: usize, m: usize, n: usize) {
+pub fn inner_merge(a: &mut [usize], b: &mut [usize], i: usize, m: usize, n: usize) {
     let len = a.len();
 
     let mut s = i;
@@ -37,7 +37,7 @@ pub fn merge_two(a: &mut [usize], b: &mut [usize], i: usize, m: usize, n: usize)
 pub fn merge_pass(a: &mut [usize], b: &mut [usize], size: usize) {
     let mut i = 0;
     loop {
-        merge_two(a, b, i, i + size - 1, i + size * 2 - 1);
+        inner_merge(a, b, i, i + size - 1, i + size * 2 - 1);
 
         if (i + size * 2) >= a.len() {
             break;
@@ -338,35 +338,35 @@ mod tests {
     }
 
     #[test]
-    fn check_merge_two_1() {
+    fn check_inner_merge_1() {
         let mut a = vec![1, 11, 15, 37, 59, 61, 5, 19, 26, 48];
         let mut b = vec![0; a.len()];
 
         let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
 
-        merge_two(&mut a, &mut b, 0, 5, 9);
+        inner_merge(&mut a, &mut b, 0, 5, 9);
         assert_eq!(b, c);
     }
 
     #[test]
-    fn check_merge_two_2() {
+    fn check_inner_merge_2() {
         let mut a = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
         let mut b = vec![0; a.len()];
 
         let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
 
-        merge_two(&mut a, &mut b, 0, 9, 9);
+        inner_merge(&mut a, &mut b, 0, 9, 9);
         assert_eq!(b, c);
     }
 
     #[test]
-    fn check_merge_two_3() {
+    fn check_inner_merge_3() {
         let mut a = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
         let mut b = vec![0; a.len()];
 
         let c = vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61];
 
-        merge_two(&mut a, &mut b, 0, 0, 9);
+        inner_merge(&mut a, &mut b, 0, 0, 9);
         assert_eq!(b, c);
     }
 
