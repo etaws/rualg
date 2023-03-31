@@ -1,3 +1,52 @@
+use std::cmp::Ordering;
+
+pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut r: Vec<Vec<i32>> = Vec::new();
+    if nums.len() <= 2 {
+        return r;
+    }
+
+    let mut a = nums;
+
+    quick_sort(&mut a);
+
+    for (i, &n) in a.iter().enumerate() {
+        if n > 0 {
+            return r;
+        }
+        if (i >= 1) && (a[i - 1] == a[i]) {
+            continue;
+        }
+
+        let mut j = i + 1;
+        let mut k = a.len() - 1;
+        while j < k {
+            let sum = a[i] + a[j] + a[k];
+            match sum.cmp(&0) {
+                Ordering::Greater => {
+                    k -= 1;
+                }
+                Ordering::Less => {
+                    j += 1;
+                }
+                Ordering::Equal => {
+                    r.push(vec![n, a[j], a[k]]);
+                    while j < k && (a[j] == a[j + 1]) {
+                        j += 1;
+                    }
+                    while j < k && (a[k - 1] == a[k]) {
+                        k -= 1;
+                    }
+
+                    j += 1;
+                    k -= 1;
+                }
+            }
+        }
+    }
+    r
+}
+
 pub fn inner_merge(a: &mut [usize], b: &mut [usize], i: usize, m: usize, n: usize) {
     let len = a.len();
 
@@ -132,7 +181,7 @@ pub fn heap_sort(a: &mut [usize]) {
     }
 }
 
-pub fn quick_sort(a: &mut [usize]) {
+pub fn quick_sort(a: &mut [i32]) {
     if a.len() <= 1 {
         return;
     }
@@ -140,7 +189,7 @@ pub fn quick_sort(a: &mut [usize]) {
     qsort(a, 0, a.len() - 1);
 }
 
-pub fn qsort(a: &mut [usize], left: usize, right: usize) {
+pub fn qsort(a: &mut [i32], left: usize, right: usize) {
     if left >= right {
         return;
     }
@@ -278,7 +327,7 @@ mod tests {
 
     #[test]
     fn check_quick_sort() {
-        check_sort_suits(quick_sort);
+        check_q_sort_suits(quick_sort);
     }
 
     #[test]
@@ -289,6 +338,36 @@ mod tests {
     #[test]
     fn check_merge_sort() {
         check_sort_suits(merge_sort);
+    }
+
+    fn check_q_sort_suits(sort_fn: fn(a: &mut [i32])) {
+        diff_qsort(
+            &mut vec![3, 5, 8, 10, 0, 0, 0, 0, 0, 0],
+            &vec![0, 0, 0, 0, 0, 0, 3, 5, 8, 10],
+            sort_fn,
+        );
+
+        diff_qsort(
+            &mut vec![5, 1, 26, 37, 61, 11, 15, 19, 59, 48],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+            sort_fn,
+        );
+
+        diff_qsort(
+            &mut vec![26, 5, 37, 1, 61, 11, 59, 15, 48, 19],
+            &vec![1, 5, 11, 15, 19, 26, 37, 48, 59, 61],
+            sort_fn,
+        );
+
+        diff_qsort(
+            &mut vec![11, 7, 20, 9, 18, 21, 19, 8, 10, 22],
+            &vec![7, 8, 9, 10, 11, 18, 19, 20, 21, 22],
+            sort_fn,
+        );
+
+        diff_qsort(&mut vec![1, 5], &vec![1, 5], sort_fn);
+
+        diff_qsort(&mut vec![0], &vec![0], sort_fn);
     }
 
     fn check_sort_suits(sort_fn: fn(a: &mut [usize])) {
@@ -319,6 +398,11 @@ mod tests {
         diff_sort(&mut vec![1, 5], &vec![1, 5], sort_fn);
 
         diff_sort(&mut vec![0], &vec![0], sort_fn);
+    }
+
+    fn diff_qsort(sorted: &mut Vec<i32>, expected: &Vec<i32>, sort_fn: fn(a: &mut [i32])) {
+        sort_fn(sorted);
+        assert_eq!(sorted, expected);
     }
 
     fn diff_sort(sorted: &mut Vec<usize>, expected: &Vec<usize>, sort_fn: fn(a: &mut [usize])) {
@@ -383,5 +467,34 @@ mod tests {
         merge_pass(&mut b, &mut a, 2);
         let c_2 = vec![1, 5, 26, 37, 11, 15, 59, 61, 19, 48];
         assert_eq!(a, c_2);
+    }
+
+    #[test]
+    fn check_three_sum_1() {
+        let b = three_sum(vec![-1, 0, 1, 2, -1, -4]);
+        assert_eq!(b.len(), 2);
+        assert_eq!(b[0], vec![-1, -1, 2]);
+        assert_eq!(b[1], vec![-1, 0, 1]);
+    }
+
+    #[test]
+    fn check_three_sum_2() {
+        let b = three_sum(vec![1, 1, 1]);
+        assert_eq!(b.len(), 0);
+    }
+
+    #[test]
+    fn check_three_sum_3() {
+        let b = three_sum(vec![0, 0, 0]);
+        assert_eq!(b.len(), 1);
+        assert_eq!(b[0], vec![0, 0, 0]);
+    }
+
+    #[test]
+    fn check_three_sum_4() {
+        let b = three_sum(vec![-1, 0, 1, 2, -1, -4, -2, -3, 3, 0, 4]);
+        assert_eq!(b.len(), 9);
+        assert_eq!(b[0], vec![-4, 0, 4]);
+        assert_eq!(b[1], vec![-4, 1, 3]);
     }
 }
