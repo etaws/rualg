@@ -1,6 +1,25 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 
-pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
+pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
+    let mut a: Vec<&str> = Vec::with_capacity(words.len());
+
+    for s in words.iter() {
+        a.push(s);
+    }
+
+    let r = top_k_frequent_s(a, k);
+
+    let mut v: Vec<String> = Vec::with_capacity(r.len());
+
+    for rr in r.iter() {
+        v.push(rr.to_string());
+    }
+
+    v
+}
+
+pub fn top_k_frequent_s(nums: Vec<&str>, k: i32) -> Vec<&str> {
     let mut hash = HashMap::new();
 
     for &n in nums.iter() {
@@ -8,80 +27,42 @@ pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
         *count += 1;
     }
 
-    let mut a: Vec<(i32, i32)> = vec![(0, 0); hash.len()];
-    for (j, (key, val)) in hash.iter().enumerate() {
-        a[j] = (*val, *key);
+    let mut a: Vec<(i32, &str)> = Vec::with_capacity(hash.len());
+    for (key, val) in hash.iter() {
+        a.push((*val, key));
     }
 
     sort_on_tuple(&mut a, k)
 }
 
-pub fn adjust_on_tuple(a: &mut Vec<(i32, i32)>, root: usize, len: usize) {
-    if a.len() <= 1 {
-        return;
-    }
+pub fn sort_on_tuple<'a>(a: &mut Vec<(i32, &'a str)>, k: i32) -> Vec<&'a str> {
+    let a_len = a.len();
 
-    if root >= a.len() {
-        return;
-    }
+    let mut v = Vec::with_capacity(a_len);
 
-    let mut i = root;
-
-    while i < len {
-        let left = (i + 1) * 2 - 1;
-        let right = (i + 1) * 2 + 1 - 1;
-
-        if left >= len {
-            break;
-        }
-
-        if right >= len {
-            if a[left].0 >= a[i].0 {
-                a.swap(i, left);
-            }
-            break;
-        }
-
-        if (a[i].0 >= a[left].0) && (a[i].0 >= a[right].0) {
-            break;
-        }
-
-        if a[left].0 >= a[right].0 {
-            a.swap(i, left);
-            i = left;
-        } else {
-            a.swap(i, right);
-            i = right;
-        }
-    }
-}
-
-pub fn sort_on_tuple(a: &mut Vec<(i32, i32)>, k: i32) -> Vec<i32> {
-    let mut v = vec![0; k as usize];
-
-    if a.len() <= 1 {
-        v[0] = a[0].1;
+    if a_len <= 1 {
+        v.push(a[0].1);
         return v;
     }
 
-    let mut i = a.len() / 2 - 1;
+    let mut i = a_len / 2 - 1;
 
     loop {
         if i == 0 {
             break;
         }
 
-        adjust_on_tuple(a, i, a.len());
+        adjust_on_tuple(a, i, a_len);
 
         i -= 1;
     }
 
-    adjust_on_tuple(a, 0, a.len());
+    adjust_on_tuple(a, 0, a_len);
 
-    let mut j = a.len() - 1;
+    let mut j = a_len - 1;
     let mut s = 0;
     loop {
-        v[s] = a[0].1;
+        v.push(a[0].1);
         s += 1;
         if s == k as usize {
             break;
@@ -96,16 +77,98 @@ pub fn sort_on_tuple(a: &mut Vec<(i32, i32)>, k: i32) -> Vec<i32> {
     v
 }
 
+pub fn diff_tuple(t: &(i32, &str), s: &(i32, &str)) -> bool {
+    if t.0 > s.0 {
+        return true;
+    }
+
+    if t.0 < s.0 {
+        return false;
+    }
+
+    match t.1.cmp(s.1) {
+        Ordering::Less => true,
+        Ordering::Greater => false,
+        Ordering::Equal => true,
+    }
+}
+
+pub fn adjust_on_tuple(a: &mut [(i32, &str)], root: usize, len: usize) {
+    if len <= 1 {
+        return;
+    }
+
+    if root >= len {
+        return;
+    }
+
+    let mut i = root;
+
+    while i < len {
+        let left = (i + 1) * 2 - 1;
+        let right = (i + 1) * 2 + 1 - 1;
+
+        if left >= len {
+            break;
+        }
+
+        if right >= len {
+            if diff_tuple(&a[left], &a[i]) {
+                a.swap(i, left);
+            }
+            break;
+        }
+
+        if diff_tuple(&a[i], &a[left]) && diff_tuple(&a[i], &a[right]) {
+            break;
+        }
+
+        if diff_tuple(&a[left], &a[right]) {
+            a.swap(i, left);
+            i = left;
+        } else {
+            a.swap(i, right);
+            i = right;
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn check_top_k() {
-        let a = vec![1, 1, 1, 2, 2, -1, -1, -1, -1];
-        let b = vec![-1, 1, 2];
+    fn check_top_k_0() {
+        let a = vec![
+            "the".to_string(),
+            "day".to_string(),
+            "is".to_string(),
+            "sunny".to_string(),
+            "the".to_string(),
+            "the".to_string(),
+            "the".to_string(),
+            "sunny".to_string(),
+            "is".to_string(),
+            "is".to_string(),
+        ];
+        let b = vec![
+            "the".to_string(),
+            "is".to_string(),
+            "sunny".to_string(),
+            "day".to_string(),
+        ];
 
-        let c = top_k_frequent(a, 3);
+        let c = top_k_frequent(a, 4);
+
+        assert_eq!(c, b);
+    }
+
+    #[test]
+    fn check_top_k_1() {
+        let a = vec!["i", "love", "leetcode", "i", "love", "coding"];
+        let b = vec!["i", "love", "coding"];
+
+        let c = top_k_frequent_s(a, 3);
 
         assert_eq!(c, b);
     }
