@@ -47,26 +47,27 @@ pub fn sort_on_tuple<'a>(a: &mut Vec<(i32, &'a str)>, k: i32) -> Vec<&'a str> {
 
     let mut i = a_len / 2 - 1;
 
+    // 先把整个数组作为一个「完全二叉树」调整成「最大堆」
     loop {
+        adjust_on_tuple(a, i, a_len);
         if i == 0 {
             break;
         }
 
-        adjust_on_tuple(a, i, a_len);
-
         i -= 1;
     }
-
-    adjust_on_tuple(a, 0, a_len);
 
     let mut j = a_len - 1;
     let mut s = 0;
     loop {
+        // 拿走「最大堆」顶端最大的元素
         v.push(a[0].1);
         s += 1;
         if s == k as usize {
             break;
         }
+
+        // 把数组最后一个元素拿上来，重新做调整（j 每次减一）
         a.swap(0, j);
 
         adjust_on_tuple(a, 0, j);
@@ -93,6 +94,13 @@ pub fn diff_tuple(t: &(i32, &str), s: &(i32, &str)) -> bool {
     }
 }
 
+/// 把一个数组看成是一个「完全二叉树」；而且这个「完全二叉树」的左右子树都已经是「最大堆」了。
+/// 如果需要把整颗「完全二叉树」调整成为「最大堆」，需要从 a[root] 这个根节点元素开始进行调整。
+///
+/// # Arguments
+///
+/// * root - 「完全二叉树」根节点的数组下标（>= 0）
+/// * len  - 「完全二叉树」的 size（注意：并不是数组的大小，这个「完全二叉树」可能只是数组的一部分）
 pub fn adjust_on_tuple(a: &mut [(i32, &str)], root: usize, len: usize) {
     if len <= 1 {
         return;
@@ -113,16 +121,20 @@ pub fn adjust_on_tuple(a: &mut [(i32, &str)], root: usize, len: usize) {
         }
 
         if right >= len {
+            // a[left] >= a[i]
             if diff_tuple(&a[left], &a[i]) {
                 a.swap(i, left);
             }
             break;
         }
 
+        // a[i] >= a[left] && a[i] > a[right]
+        // a[i] 已经是最大的节点了，结束
         if diff_tuple(&a[i], &a[left]) && diff_tuple(&a[i], &a[right]) {
             break;
         }
 
+        // a[left] > a[right] 的话 a[left] 应该调整上去，否则应该把 a[right] 调整上去
         if diff_tuple(&a[left], &a[right]) {
             a.swap(i, left);
             i = left;
