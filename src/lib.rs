@@ -4,6 +4,7 @@ pub mod disappear;
 pub mod merge;
 pub mod merge_list;
 pub mod sort;
+pub mod ss;
 pub mod stairs;
 pub mod top;
 pub mod top_k;
