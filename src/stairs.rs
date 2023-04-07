@@ -1,3 +1,18 @@
+pub fn max_profit(prices: Vec<i32>) -> i32 {
+    let mut r = 0;
+    let mut s = &prices[0];
+
+    for n in prices.iter() {
+        if s > n {
+            s = n;
+        } else if (n - s) > r {
+            r = n - s;
+        }
+    }
+
+    r
+}
+
 pub fn count(number: usize) -> usize {
     if number == 0 {
         return 0;
@@ -42,5 +57,12 @@ mod tests {
         for (k, v) in &expected {
             assert_eq!(count(*k), *v);
         }
+    }
+
+    #[test]
+    fn check_max_value() {
+        assert_eq!(max_profit(vec![7, 1, 5, 3, 6, 4]), 5);
+        assert_eq!(max_profit(vec![7, 6, 4, 3, 1]), 0);
+        assert_eq!(max_profit(vec![7, 1, 5, 3, 6, 4, 1, 2]), 5);
     }
 }
