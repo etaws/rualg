@@ -1,26 +1,10 @@
 pub fn max_sub_array(nums: Vec<i32>) -> i32 {
-    let mut pre = nums[0];
-    let mut max = nums[0];
-    for (i, n) in nums.into_iter().enumerate() {
-        if i == 0 {
-            continue;
-        }
-
-        if (pre + n) > max {
-            max = pre + n;
-        }
-
-        if n > max {
-            max = n;
-        }
-
-        if pre >= 0 {
-            pre += n;
-        } else {
-            pre = n;
-        }
+    let mut pre: i32 = -10000;
+    let mut max: i32 = nums[0];
+    for n in nums.iter() {
+        pre = std::cmp::max(pre + n, *n);
+        max = std::cmp::max(pre, max);
     }
-
     max
 }
 
