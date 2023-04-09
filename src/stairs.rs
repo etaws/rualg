@@ -1,3 +1,29 @@
+pub fn max_sub_array(nums: Vec<i32>) -> i32 {
+    let mut pre = nums[0];
+    let mut max = nums[0];
+    for (i, n) in nums.into_iter().enumerate() {
+        if i == 0 {
+            continue;
+        }
+
+        if (pre + n) > max {
+            max = pre + n;
+        }
+
+        if n > max {
+            max = n;
+        }
+
+        if pre >= 0 {
+            pre += n;
+        } else {
+            pre = n;
+        }
+    }
+
+    max
+}
+
 pub fn max_profit(prices: Vec<i32>) -> i32 {
     let mut r = 0;
     let mut s = &prices[0];
@@ -64,5 +90,13 @@ mod tests {
         assert_eq!(max_profit(vec![7, 1, 5, 3, 6, 4]), 5);
         assert_eq!(max_profit(vec![7, 6, 4, 3, 1]), 0);
         assert_eq!(max_profit(vec![7, 1, 5, 3, 6, 4, 1, 2]), 5);
+    }
+
+    #[test]
+    fn check_max_sub_array() {
+        assert_eq!(max_sub_array(vec![-2, 1, -3, 4, -1, 2, 1, -5, 4]), 6);
+        assert_eq!(max_sub_array(vec![1]), 1);
+        assert_eq!(max_sub_array(vec![5, 4, -1, 7, 8]), 23);
+        assert_eq!(max_sub_array(vec![-2, 1]), 1);
     }
 }
