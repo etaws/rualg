@@ -14,6 +14,58 @@ impl ListNode {
     }
 }
 
+pub fn add_two_numbers(
+    l1: Option<Box<ListNode>>,
+    l2: Option<Box<ListNode>>,
+) -> Option<Box<ListNode>> {
+    let mut output: Option<Box<ListNode>> = None;
+    let mut next_node_pos: &mut Option<Box<ListNode>> = &mut output;
+
+    let mut l1_opt = l1;
+    let mut l2_opt = l2;
+
+    let mut up = 0;
+    while l1_opt.is_some() || l2_opt.is_some() {
+        let n1 = match l1_opt.as_ref() {
+            Some(node1) => node1.val,
+            None => 0,
+        };
+
+        let n2 = match l2_opt.as_ref() {
+            Some(node2) => node2.val,
+            None => 0,
+        };
+
+        let c = n1 + n2 + up;
+        up = if c >= 10 { 1 } else { 0 };
+
+        let node = ListNode::new(c % 10);
+
+        if next_node_pos.is_none() {
+            *next_node_pos = Some(Box::new(node));
+        } else {
+            next_node_pos = &mut next_node_pos.as_mut().unwrap().next;
+            *next_node_pos = Some(Box::new(node));
+        }
+
+        if l1_opt.is_some() {
+            l1_opt = l1_opt.unwrap().next.take();
+        }
+
+        if l2_opt.is_some() {
+            l2_opt = l2_opt.unwrap().next.take();
+        }
+    }
+
+    if up == 1 {
+        let node = ListNode::new(1);
+        next_node_pos = &mut next_node_pos.as_mut().unwrap().next;
+        *next_node_pos = Some(Box::new(node));
+    }
+
+    output
+}
+
 // helper function for test
 pub fn to_list(vec: Vec<i32>) -> Option<Box<ListNode>> {
     let mut current = None;
@@ -167,6 +219,21 @@ mod tests {
         assert_eq!(
             reverse_list(to_list(vec![1, 2, 3, 4, 5])),
             to_list(vec![5, 4, 3, 2, 1])
+        );
+    }
+
+    #[test]
+    fn check_add_list() {
+        assert_eq!(
+            add_two_numbers(to_list(vec![2, 4, 3]), to_list(vec![5, 6, 4])),
+            to_list(vec![7, 0, 8])
+        );
+        assert_eq!(
+            add_two_numbers(
+                to_list(vec![9, 9, 9, 9, 9, 9, 9]),
+                to_list(vec![9, 9, 9, 9])
+            ),
+            to_list(vec![8, 9, 9, 9, 0, 0, 0, 1])
         );
     }
 }
