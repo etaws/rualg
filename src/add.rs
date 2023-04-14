@@ -90,6 +90,102 @@ impl NumMatrix {
     }
 }
 
+pub fn to_num(s: &[u8]) -> u64 {
+    let mut r: u64 = 0;
+    for u in s.iter() {
+        r = r * 10 + (u - b'0') as u64;
+    }
+
+    r
+}
+
+pub fn get_first_num(s: &[u8]) -> bool {
+    let len: usize = s.len();
+
+    for j in 1..len - 1 {
+        for k in j + 1..len {
+            let s1 = &s[0..j];
+            let s2 = &s[j..k];
+
+            if s1.len() >= 2 && s1[0] == b'0' {
+                continue;
+            }
+            if s2.len() >= 2 && s2[0] == b'0' {
+                continue;
+            }
+            if k >= len {
+                continue;
+            }
+            if s1.len() > (len / 2) {
+                continue;
+            }
+            if s2.len() > (len / 2) {
+                continue;
+            }
+
+            let n1 = to_num(s1);
+            let n2 = to_num(s2);
+
+            if let Some(r) = find_num(n1 + n2, &s[k..]) {
+                let mut u1 = n2;
+                let mut u2 = n1 + n2;
+                let mut i = k + r + 1;
+
+                if i == s.len() {
+                    return true;
+                }
+
+                while let Some(r) = find_num(u1 + u2, &s[i..]) {
+                    let t = u2;
+                    u2 += u1;
+                    u1 = t;
+
+                    if (i + r + 1) == s.len() {
+                        return true;
+                    }
+
+                    i = i + r + 1;
+                }
+            }
+        }
+    }
+
+    false
+}
+
+pub fn is_additive_number(num: String) -> bool {
+    let s = num.as_bytes();
+    if s.len() < 3 {
+        return false;
+    }
+
+    get_first_num(s)
+}
+
+pub fn find_num(u: u64, s: &[u8]) -> Option<usize> {
+    if s.len() >= 2 && s[0] == b'0' {
+        return None;
+    }
+
+    let sn = u.to_string();
+    if sn.len() > s.len() {
+        return None;
+    }
+
+    let a = sn.as_bytes();
+
+    for i in 0..sn.len() {
+        let n1 = a[i];
+        let n2 = s[i];
+
+        if n1 != n2 {
+            return None;
+        }
+    }
+
+    Some(sn.len() - 1)
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -155,5 +251,19 @@ mod tests {
         assert_eq!(my_matrix.sum_region(2, 1, 4, 3), 8);
         assert_eq!(my_matrix.sum_region(1, 1, 2, 2), 11);
         assert_eq!(my_matrix.sum_region(1, 2, 2, 4), 12);
+    }
+
+    #[test]
+    fn check_is_additive_number() {
+        assert!(is_additive_number("199100".to_string()));
+        assert!(is_additive_number("199100199".to_string()));
+        assert!(!is_additive_number("199100198".to_string()));
+        assert!(is_additive_number("112358".to_string()));
+        assert!(is_additive_number("123".to_string()));
+        assert!(!is_additive_number("1203".to_string()));
+        assert!(is_additive_number("12122436".to_string()));
+        assert!(is_additive_number(
+            "1999999999999999910000000000000000".to_string()
+        ));
     }
 }
