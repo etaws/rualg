@@ -1,5 +1,29 @@
 use std::collections::HashMap;
 
+pub fn move_zeroes(nums: &mut Vec<i32>) {
+    if nums.is_empty() {
+        return;
+    }
+
+    let mut i: usize = 0;
+    let mut j: usize = 0;
+
+    while i < nums.len() {
+        if nums[i] != 0 {
+            nums[j] = nums[i];
+            j += 1;
+        }
+
+        i += 1;
+    }
+
+    while j < nums.len() {
+        nums[j] = 0;
+
+        j += 1;
+    }
+}
+
 pub fn seek_two(a: &[i32], target: i32) -> (usize, usize) {
     let mut s: HashMap<i32, usize> = HashMap::new();
 
@@ -219,6 +243,17 @@ mod tests {
         let r = seek_two(&a, target);
 
         assert_eq!(r, (0, 1));
+    }
+
+    #[test]
+    fn check_move_zeroes() {
+        let mut v = vec![0, 1, 0, 3, 12];
+        move_zeroes(&mut v);
+        assert_eq!(v, vec![1, 3, 12, 0, 0]);
+
+        let mut v1 = vec![0];
+        move_zeroes(&mut v1);
+        assert_eq!(v1, vec![0]);
     }
 
     #[test]
