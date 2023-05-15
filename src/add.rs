@@ -24,6 +24,30 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
     }
 }
 
+pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+    let mut s: HashMap<i32, usize> = HashMap::new();
+
+    for (j, n) in nums.iter().enumerate() {
+        let another = target - n;
+
+        if s.get(&another).is_some() {
+            let one = j;
+            let two = *(s.get(&another).unwrap());
+
+            // 返回的时候规范一下：总是小的数放在前面
+            if one > two {
+                return vec![two as i32, one as i32];
+            } else {
+                return vec![one as i32, two as i32];
+            }
+        } else {
+            s.insert(*n, j);
+        }
+    }
+
+    vec![0, 0]
+}
+
 pub fn seek_two(a: &[i32], target: i32) -> (usize, usize) {
     let mut s: HashMap<i32, usize> = HashMap::new();
 
