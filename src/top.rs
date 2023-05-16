@@ -6,12 +6,10 @@ pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
     for s in strs.into_iter() {
         let ss = sort_s(&s);
 
-        if hash.get(&ss).is_none() {
-            let v = vec![s];
-            hash.insert(ss, v);
-        } else {
-            let v = hash.get_mut(&ss).unwrap();
+        if let Some(v) = hash.get_mut(&ss) {
             v.push(s);
+        } else {
+            hash.insert(ss, vec![s]);
         }
     }
 
