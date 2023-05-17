@@ -1,25 +1,42 @@
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
-    let mut hash: HashSet<i32> = HashSet::new();
-    for n in nums.iter() {
-        hash.insert(*n);
+    if nums.is_empty() {
+        return 0;
     }
 
-    let mut r = 0;
-    for n in nums.iter() {
-        let mut i = *n + 1;
-        while hash.get(&i).is_some() {
-            i += 1;
+    let mut n = nums.clone();
+    n.sort_unstable();
+
+    let mut max_r = 0;
+
+    let mut r = 1;
+
+    let mut i = 0;
+    while i < nums.len() {
+        if i == 0 {
+            r = 1;
+        } else {
+            let pre = n[i - 1];
+            if n[i] == pre {
+            } else if n[i] == (pre + 1) {
+                r += 1;
+            } else {
+                if r > max_r {
+                    max_r = r;
+                }
+                r = 1;
+            }
         }
 
-        if r < (i - *n) {
-            r = i - *n;
-        }
+        i += 1;
     }
 
-    r
+    if r > max_r {
+        max_r = r;
+    }
+
+    max_r
 }
 
 pub fn move_zeroes(nums: &mut Vec<i32>) {
@@ -350,6 +367,7 @@ mod tests {
 
     #[test]
     fn check_longest_consecutive() {
+        assert_eq!(longest_consecutive(vec![1, 2, 0, 1]), 3);
         assert_eq!(longest_consecutive(vec![100, 4, 200, 1, 3, 2]), 4);
         assert_eq!(longest_consecutive(vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1]), 9);
     }
