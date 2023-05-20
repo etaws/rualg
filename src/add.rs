@@ -1,5 +1,35 @@
 use std::collections::HashMap;
 
+pub fn max_area(height: Vec<i32>) -> i32 {
+    if height.is_empty() {
+        return 0;
+    }
+
+    let mut i = 0;
+    let mut j = height.len() - 1;
+
+    let mut max = 0;
+    while i < j {
+        let short_h: i32 = if height[i] < height[j] {
+            height[i]
+        } else {
+            height[j]
+        };
+        let c = (j - i) as i32 * short_h;
+        if c > max {
+            max = c;
+        }
+
+        if short_h == height[i] {
+            i += 1;
+        } else {
+            j -= 1;
+        }
+    }
+
+    max
+}
+
 pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
     if nums.is_empty() {
         return 0;
@@ -370,5 +400,10 @@ mod tests {
         assert_eq!(longest_consecutive(vec![1, 2, 0, 1]), 3);
         assert_eq!(longest_consecutive(vec![100, 4, 200, 1, 3, 2]), 4);
         assert_eq!(longest_consecutive(vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1]), 9);
+    }
+
+    #[test]
+    fn check_max_area() {
+        assert_eq!(max_area(vec![1, 8, 6, 2, 5, 4, 8, 3, 7]), 49);
     }
 }
