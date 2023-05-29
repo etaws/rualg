@@ -150,6 +150,42 @@ pub fn length_of_longest_substring(s: String) -> i32 {
     max as i32
 }
 
+pub fn trap(height: Vec<i32>) -> i32 {
+    if height.is_empty() {
+        return 0;
+    }
+
+    let mut v: Vec<(usize, i32)> = Vec::new();
+    let mut top = -1;
+    for (i, n) in height.iter().enumerate() {
+        if (*n == 0) && v.is_empty() {
+            continue;
+        }
+
+        if v.is_empty() {
+            v.push((i, *n));
+            top = *n;
+            continue;
+        }
+
+        if (v.len() == 1) && (top <= *n) {
+            v[0] = (i, *n);
+            top = *n;
+            continue;
+        }
+
+        if (v.len() >= 2) && (top >= *n) {
+            v.push((i, *n));
+            top = *n;
+            continue;
+        }
+
+        let cur = v.pop();
+    }
+
+    0
+}
+
 pub fn max_area(height: Vec<i32>) -> i32 {
     if height.is_empty() {
         return 0;
