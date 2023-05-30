@@ -1,5 +1,55 @@
 use std::collections::HashMap;
 
+pub fn length_of_longest_substring(s: String) -> i32 {
+    let len = s.len();
+
+    if s.is_empty() || (s.len() == 1) {
+        return len as i32;
+    }
+
+    let mut a: Vec<char> = Vec::new();
+    for c in s.chars() {
+        a.push(c);
+    }
+
+    let mut st: HashMap<char, usize> = HashMap::new();
+
+    let mut i = 0;
+    let mut max = 0;
+    let mut cur: usize = 0;
+    while i < s.len() {
+        let c = a[i];
+
+        match st.get(&c) {
+            Some(j) => {
+                if cur > max {
+                    max = cur;
+                }
+
+                if *j == (len - 1) {
+                    break;
+                }
+
+                i = j + 1;
+                cur = 0;
+
+                st.clear();
+            }
+            None => {
+                st.insert(c, i);
+                i += 1;
+                cur += 1;
+            }
+        };
+    }
+
+    if cur > max {
+        max = cur;
+    }
+
+    max as i32
+}
+
 pub fn max_area(height: Vec<i32>) -> i32 {
     if height.is_empty() {
         return 0;
@@ -405,5 +455,15 @@ mod tests {
     #[test]
     fn check_max_area() {
         assert_eq!(max_area(vec![1, 8, 6, 2, 5, 4, 8, 3, 7]), 49);
+    }
+
+    #[test]
+    fn check_longest_sub() {
+        assert_eq!(length_of_longest_substring("".to_string()), 0);
+        assert_eq!(length_of_longest_substring("a".to_string()), 1);
+        assert_eq!(length_of_longest_substring("abcabcbb".to_string()), 3);
+        assert_eq!(length_of_longest_substring("bbbbb".to_string()), 1);
+        assert_eq!(length_of_longest_substring("pwwkew".to_string()), 3);
+        assert_eq!(length_of_longest_substring("au".to_string()), 2);
     }
 }
