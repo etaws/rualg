@@ -1,5 +1,83 @@
 use std::collections::HashMap;
 
+pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
+    let mut v = Vec::new();
+
+    if s.len() < p.len() {
+        return v;
+    }
+
+    let mut d: [i32; 26] = [0; 26];
+
+    let mut a: Vec<usize> = Vec::new();
+    for c in s.chars() {
+        a.push((c as u8 - b'a').into());
+    }
+
+    let mut b: Vec<usize> = Vec::new();
+    for c in p.chars() {
+        b.push((c as u8 - b'a').into());
+    }
+
+    let mut i = 0;
+    let mut diff = 0;
+    while i < p.len() {
+        let pv = b[i];
+        d[pv] -= 1;
+
+        if d[pv] == 0 {
+            diff -= 1;
+        }
+        if d[pv] == -1 {
+            diff += 1;
+        }
+
+        let sv = a[i];
+        d[sv] += 1;
+        if d[sv] == 0 {
+            diff -= 1;
+        }
+        if d[sv] == 1 {
+            diff += 1;
+        }
+
+        i += 1;
+    }
+
+    if diff == 0 {
+        v.push(0);
+    }
+
+    let mut j = 0;
+    while i < s.len() {
+        let jv = a[j];
+        d[jv] -= 1;
+        if d[jv] == 0 {
+            diff -= 1;
+        }
+        if d[jv] == -1 {
+            diff += 1;
+        }
+        j += 1;
+
+        let iv = a[i];
+        d[iv] += 1;
+        if d[iv] == 0 {
+            diff -= 1;
+        }
+        if d[iv] == 1 {
+            diff += 1;
+        }
+        i += 1;
+
+        if diff == 0 {
+            v.push(j as i32)
+        }
+    }
+
+    v
+}
+
 pub fn length_of_longest_substring(s: String) -> i32 {
     let len = s.len();
 
@@ -465,5 +543,18 @@ mod tests {
         assert_eq!(length_of_longest_substring("bbbbb".to_string()), 1);
         assert_eq!(length_of_longest_substring("pwwkew".to_string()), 3);
         assert_eq!(length_of_longest_substring("au".to_string()), 2);
+    }
+
+    #[test]
+    fn check_find_anagrams() {
+        assert_eq!(
+            find_anagrams("cbaebabacd".to_string(), "abc".to_string()),
+            vec![0, 6]
+        );
+
+        assert_eq!(
+            find_anagrams("abab".to_string(), "ab".to_string()),
+            vec![0, 1, 2]
+        );
     }
 }
