@@ -1,5 +1,27 @@
 use std::collections::HashMap;
 
+pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
+    let mut st: HashMap<i32, i32> = HashMap::new();
+
+    st.insert(0, 1);
+
+    let mut sum = 0;
+    let mut count = 0;
+    for n in nums.into_iter() {
+        sum += n;
+
+        let w = sum - k;
+        if let Some(c) = st.get(&w) {
+            count += c;
+        }
+
+        let mc = st.entry(sum).or_insert(0);
+        *mc += 1;
+    }
+
+    count
+}
+
 pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
     let mut v = Vec::new();
 
@@ -556,5 +578,14 @@ mod tests {
             find_anagrams("abab".to_string(), "ab".to_string()),
             vec![0, 1, 2]
         );
+    }
+
+    #[test]
+    fn check_subarray_sum() {
+        assert_eq!(subarray_sum(vec![1], 0), 0);
+        assert_eq!(subarray_sum(vec![1, 1, 1], 2), 2);
+        assert_eq!(subarray_sum(vec![1, 2, 3], 3), 2);
+        assert_eq!(subarray_sum(vec![-1, -1, 1], 0), 1);
+        assert_eq!(subarray_sum(vec![1, -1, 0], 0), 3);
     }
 }
