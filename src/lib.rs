@@ -1,5 +1,6 @@
 pub mod add;
 pub mod all;
+pub mod bits;
 pub mod decode;
 pub mod disappear;
 pub mod merge;
