@@ -59,6 +59,48 @@ impl Bits {
     }
 }
 
+pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    let mut v: Vec<Vec<i32>> = Vec::new();
+
+    let mut b = Bits::new(10000);
+
+    for vs in intervals.into_iter() {
+        if vs.len() != 2 {
+            continue;
+        }
+
+        let i = vs[0];
+        let j = vs[1];
+
+        if i < 0 || j < 0 {
+            continue;
+        }
+
+        let mut k = i;
+        while k <= j {
+            b.set(k as usize);
+            k += 1;
+        }
+    }
+
+    let mut in_it = false;
+    let mut s = 0;
+    for t in 0..10000 {
+        if !in_it {
+            if b.get(t) {
+                s = t;
+                in_it = true;
+            }
+        } else if !b.get(t) {
+            let cv: Vec<i32> = vec![s as i32, (t - 1) as i32];
+            v.push(cv);
+            in_it = false;
+        }
+    }
+
+    v
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -93,5 +135,15 @@ mod tests {
         b.unset(999);
 
         assert!(!b.get(999));
+    }
+
+    #[test]
+    fn check_merge() {
+        let v: Vec<Vec<i32>> = vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]];
+
+        let r = merge(v);
+
+        let er: Vec<Vec<i32>> = vec![vec![1, 6], vec![8, 10], vec![15, 18]];
+        assert_eq!(r, er);
     }
 }
