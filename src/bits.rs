@@ -138,6 +138,16 @@ mod tests {
     }
 
     #[test]
+    fn check_merge_1() {
+        let v: Vec<Vec<i32>> = vec![vec![1, 4], vec![4, 5]];
+
+        let r = merge(v);
+
+        let er: Vec<Vec<i32>> = vec![vec![1, 5]];
+        assert_eq!(r, er);
+    }
+
+    #[test]
     fn check_merge() {
         let v: Vec<Vec<i32>> = vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]];
 
