@@ -77,7 +77,7 @@ pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         }
 
         let mut k = i;
-        while k <= j {
+        while k < j {
             b.set(k as usize);
             k += 1;
         }
@@ -92,7 +92,7 @@ pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
                 in_it = true;
             }
         } else if !b.get(t) {
-            let cv: Vec<i32> = vec![s as i32, (t - 1) as i32];
+            let cv: Vec<i32> = vec![s as i32, t as i32];
             v.push(cv);
             in_it = false;
         }
