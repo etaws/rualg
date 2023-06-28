@@ -62,39 +62,35 @@ impl Bits {
 pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     let mut v: Vec<Vec<i32>> = Vec::new();
 
-    let mut b = Bits::new(10000);
+    let mut vp: Vec<(i32, i32)> = intervals
+        .iter()
+        .filter(|x| x.len() == 2 && x[0] >= 0 && x[1] >= 0)
+        .map(|x| (x[0], x[1]))
+        .collect();
 
-    for vs in intervals.into_iter() {
-        if vs.len() != 2 {
+    vp.sort();
+
+    for vs in vp.into_iter() {
+        let i = vs.0;
+        let j = vs.1;
+
+        if v.is_empty() {
+            v.push(vec![i, j]);
             continue;
         }
 
-        let i = vs[0];
-        let j = vs[1];
+        let last_one = v.pop().unwrap();
 
-        if i < 0 || j < 0 {
-            continue;
-        }
+        let m = last_one[0];
+        let n = last_one[1];
 
-        let mut k = i;
-        while k < j {
-            b.set(k as usize);
-            k += 1;
-        }
-    }
-
-    let mut in_it = false;
-    let mut s = 0;
-    for t in 0..10000 {
-        if !in_it {
-            if b.get(t) {
-                s = t;
-                in_it = true;
-            }
-        } else if !b.get(t) {
-            let cv: Vec<i32> = vec![s as i32, t as i32];
-            v.push(cv);
-            in_it = false;
+        if i > n {
+            v.push(vec![m, n]);
+            v.push(vec![i, j]);
+        } else if j > n {
+            v.push(vec![m, j]);
+        } else {
+            v.push(vec![m, n]);
         }
     }
 
@@ -138,6 +134,16 @@ mod tests {
     }
 
     #[test]
+    fn check_merge_2() {
+        let v: Vec<Vec<i32>> = vec![vec![1, 4], vec![2, 3]];
+
+        let r = merge(v);
+
+        let er: Vec<Vec<i32>> = vec![vec![1, 4]];
+        assert_eq!(r, er);
+    }
+
+    #[test]
     fn check_merge_1() {
         let v: Vec<Vec<i32>> = vec![vec![1, 4], vec![4, 5]];
 
@@ -149,7 +155,13 @@ mod tests {
 
     #[test]
     fn check_merge() {
-        let v: Vec<Vec<i32>> = vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]];
+        let v: Vec<Vec<i32>> = vec![
+            vec![2, 2],
+            vec![1, 3],
+            vec![8, 10],
+            vec![15, 18],
+            vec![2, 6],
+        ];
 
         let r = merge(v);
 
