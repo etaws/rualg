@@ -6,6 +6,9 @@ use std::rc::Rc;
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
     pub val: i32,
+    // 这里利用了一个惯用法：`Rc<T>` 和 `RefCell<T>` 结合使用来实现一个拥有多重所有权的可变数据
+    // 用 `borrow()` 和 `borrow_mut()` 拿到数据 T 的「引用」
+    // 另外，还要用 Option 再包一层，表达「非空」（Some）和「空」（None）2 种状态
     pub left: Option<Rc<RefCell<TreeNode>>>,
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
@@ -161,16 +164,28 @@ pub fn max_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     }
 
     let mut re: VecDeque<Option<Rc<RefCell<TreeNode>>>> = VecDeque::new();
+    // `VecDeque.push_front()` 的入参是「值」本身，而不是「借用」，
+    // 所以调用过后，「根节点」的 ownership 发生转移，被 `VecDeque` 所有
     re.push_front(root);
 
+    // 解法用的是「广度遍历」的方法
+ 
+    // 当前层有多少个节点（在「广度遍历」上一层时，累加下一层的所有节点得到）
     let mut current_size = 1;
     let mut r = 0;
 
     while !re.is_empty() {
+        // 用于累加下一层的所有节点
         let mut next_size = 0;
         for _i in 0..current_size {
+            // 这里用了 2 层 Some：
+            // 第一层用于判断 `VecDeque.pop_back()` 是否返回空
+            // 第二层用于判断：`VecDeque` 中的 `TreeNode` 节点是否为空
+            // 另外，节点的 ownership 会从 `VecDeque` 中转移出来
             if let Some(Some(n)) = re.pop_back() {
                 if n.borrow().left.is_some() {
+                    // 这里要使用 `clone`，放入 `VecDeque` 的节点是一个新 clone 出来的节点
+                    // 不能破坏原先的「树」结构
                     re.push_front(n.borrow().left.clone());
                     next_size += 1;
                 }
