@@ -169,7 +169,7 @@ pub fn max_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     re.push_front(root);
 
     // 解法用的是「广度遍历」的方法
- 
+
     // 当前层有多少个节点（在「广度遍历」上一层时，累加下一层的所有节点得到）
     let mut current_size = 1;
     let mut r = 0;
@@ -202,6 +202,85 @@ pub fn max_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     }
 
     r
+}
+
+pub fn valid_bst(root: Option<&Rc<RefCell<TreeNode>>>) -> (bool, i32, i32) {
+    if let Some(node) = root {
+        let c = node.borrow().val;
+        let mut max = c;
+        let mut min = c;
+
+        if node.borrow().left.is_some() {
+            let (lr, lmax, lmin) = valid_bst(node.borrow().left.as_ref());
+            if !lr {
+                return (false, max, min);
+            }
+
+            if c <= lmax {
+                return (false, max, min);
+            }
+
+            min = lmin;
+        }
+
+        if node.borrow().right.is_some() {
+            let (lr, rmax, rmin) = valid_bst(node.borrow().right.as_ref());
+            if !lr {
+                return (false, max, min);
+            }
+
+            if c >= rmin {
+                return (false, max, min);
+            }
+
+            max = rmax;
+        }
+
+        (true, max, min)
+    } else {
+        (true, 0, 0)
+    }
+}
+
+pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    // 这里的 `as_ref()` 方法是 Rust 的一个惯用法： 把 `&Option<T>` 转成 `Option<&T>`
+    let (re, _, _) = valid_bst(root.as_ref());
+
+    re
+}
+
+pub fn diameter_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    let mut max = 0;
+    depth_with_max(root.as_ref(), &mut max);
+
+    max - 1
+}
+
+pub fn depth_with_max(root: Option<&Rc<RefCell<TreeNode>>>, max: &mut i32) -> i32 {
+    if root.is_none() {
+        return 0;
+    }
+
+    let mut left_depth = 0;
+    if root.unwrap().borrow().left.is_some() {
+        left_depth = depth_with_max(root.unwrap().borrow().left.as_ref(), max);
+    }
+
+    let mut right_depth = 0;
+    if root.unwrap().borrow().right.is_some() {
+        right_depth = depth_with_max(root.unwrap().borrow().right.as_ref(), max);
+    }
+
+    let mut depth = left_depth;
+    if right_depth > left_depth {
+        depth = right_depth;
+    }
+
+    if (right_depth + left_depth + 1) > *max {
+        *max = right_depth + left_depth + 1;
+    }
+
+    depth + 1
 }
 
 #[cfg(test)]
@@ -238,5 +317,17 @@ mod tests {
     #[test]
     fn test_max_depth() {
         assert_eq!(max_depth(tree![3, 9, 20, null, null, 15, 7]), 3);
+    }
+
+    #[test]
+    fn test_is_valid_bst() {
+        assert!(is_valid_bst(tree![2, 1, 3]));
+        assert!(!is_valid_bst(tree![5, 1, 4, null, null, 3, 6]));
+    }
+
+    #[test]
+    fn test_diameter_of_binary_tree() {
+        assert_eq!(diameter_of_binary_tree(tree![1, 2, 3, 4, 5]), 3);
+        assert_eq!(diameter_of_binary_tree(tree![1, 2]), 1);
     }
 }
