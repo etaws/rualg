@@ -79,18 +79,12 @@ pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
             continue;
         }
 
-        let last_one = v.pop().unwrap();
+        let last_one = v.last_mut().unwrap();
 
-        let m = last_one[0];
-        let n = last_one[1];
-
-        if i > n {
-            v.push(vec![m, n]);
+        if i > (*last_one)[1] {
             v.push(vec![i, j]);
-        } else if j > n {
-            v.push(vec![m, j]);
-        } else {
-            v.push(vec![m, n]);
+        } else if j > (*last_one)[1] {
+            (*last_one)[1] = j;
         }
     }
 
