@@ -1,3 +1,16 @@
+pub fn rotate(nums: &mut Vec<i32>, k: i32) {
+    let n = nums.len();
+    let kk = (k as usize) % n;
+
+    if kk == 0 {
+        return;
+    }
+
+    reverse(nums, 0, n - 1);
+    reverse(nums, 0, kk - 1);
+    reverse(nums, kk, n - 1);
+}
+
 pub fn reverse(nums: &mut Vec<i32>, start: usize, end: usize) {
     if nums.is_empty() {
         return;
@@ -25,6 +38,27 @@ pub fn reverse(nums: &mut Vec<i32>, start: usize, end: usize) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn check_rotate() {
+        let mut a = vec![1, 2, 3, 4, 5, 6, 7];
+        rotate(&mut a, 3);
+        assert_eq!(a, vec![5, 6, 7, 1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn check_rotate_0() {
+        let mut a = vec![1, 2];
+        rotate(&mut a, 0);
+        assert_eq!(a, vec![1, 2]);
+    }
+
+    #[test]
+    fn check_rotate_2() {
+        let mut a = vec![1, 2];
+        rotate(&mut a, 2);
+        assert_eq!(a, vec![1, 2]);
+    }
 
     #[test]
     fn check_reverse() {
