@@ -11,3 +11,4 @@ pub mod stairs;
 pub mod top;
 pub mod top_k;
 pub mod tree;
+pub mod rotate;
