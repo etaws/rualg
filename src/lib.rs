@@ -5,6 +5,7 @@ pub mod decode;
 pub mod disappear;
 pub mod merge;
 pub mod merge_list;
+pub mod ministack;
 pub mod pes;
 pub mod rotate;
 pub mod sort;
