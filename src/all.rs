@@ -55,6 +55,68 @@ pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
     r
 }
 
+fn char_array_to_string(chars: &[char]) -> String {
+    chars.iter().collect::<String>()
+}
+
+fn letter_combinations_btrace(
+    arr: &Vec<Vec<char>>,
+    d: &Vec<u32>,
+    depth: usize,
+    path: &mut Vec<char>,
+    r: &mut Vec<String>,
+) {
+    let path_len = d.len();
+
+    if path.len() == path_len {
+        let s = char_array_to_string(path);
+        r.push(s);
+        return;
+    }
+
+    let i: usize = d[depth] as usize;
+    let row = arr.get(i).unwrap();
+    for &c in row.iter() {
+        path.push(c);
+        letter_combinations_btrace(arr, d, depth + 1, path, r);
+        path.pop();
+    }
+}
+
+pub fn letter_combinations(digits: String) -> Vec<String> {
+    let mut r: Vec<String> = Vec::new();
+
+    if digits.is_empty() {
+        return r;
+    }
+
+    let arr: Vec<Vec<char>> = vec![
+        vec![],
+        vec![],
+        vec!['a', 'b', 'c'],
+        vec!['d', 'e', 'f'],
+        vec!['g', 'h', 'i'],
+        vec!['j', 'k', 'l'],
+        vec!['m', 'o', 'n'],
+        vec!['p', 'q', 'r', 's'],
+        vec!['t', 'u', 'v'],
+        vec!['w', 'x', 'y', 'z'],
+    ];
+
+    let mut d: Vec<u32> = Vec::new();
+    for c in digits.chars() {
+        if let Some(n) = c.to_digit(10) {
+            d.push(n);
+        }
+    }
+
+    let mut path: Vec<char> = Vec::new();
+
+    letter_combinations_btrace(&arr, &d, 0, &mut path, &mut r);
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -95,5 +157,11 @@ mod tests {
         assert_eq!(e.len(), 6);
 
         dbg!(e);
+    }
+
+    #[test]
+    fn check_letter() {
+        let e = letter_combinations("23".to_string());
+        assert_eq!(e.len(), 9);
     }
 }
