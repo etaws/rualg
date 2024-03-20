@@ -18,6 +18,43 @@ pub fn ddd(nums: &Vec<i32>, r: &mut Vec<Vec<i32>>, path: &mut Vec<i32>, start: u
     }
 }
 
+fn permute_btrace(
+    nums: &Vec<i32>,
+    path: &mut Vec<i32>,
+    used: &mut Vec<i32>,
+    r: &mut Vec<Vec<i32>>,
+) {
+    if path.len() == nums.len() {
+        r.push(path.clone());
+        return;
+    }
+
+    for i in 0..nums.len() {
+        if used[i] == 1 {
+            continue;
+        }
+
+        path.push(nums[i]);
+        used[i] = 1;
+        permute_btrace(nums, path, used, r);
+
+        path.pop();
+        used[i] = 0;
+    }
+}
+
+pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut r: Vec<Vec<i32>> = Vec::new();
+
+    let mut path: Vec<i32> = Vec::new();
+
+    let mut used = vec![0; nums.len()];
+
+    permute_btrace(&nums, &mut path, &mut used, &mut r);
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -48,5 +85,15 @@ mod tests {
         let v: Vec<Vec<i32>> = vec![vec![], vec![1], vec![1, 2], vec![2]];
 
         assert_eq!(r, v);
+    }
+
+    #[test]
+    fn check_permute() {
+        let nums = vec![1, 2, 3];
+        let e = permute(nums);
+
+        assert_eq!(e.len(), 6);
+
+        dbg!(e);
     }
 }
