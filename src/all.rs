@@ -117,6 +117,46 @@ pub fn letter_combinations(digits: String) -> Vec<String> {
     r
 }
 
+fn combination_btrace(
+    candidates: &Vec<i32>,
+    path: &mut Vec<i32>,
+    mut path_sum: i32,
+    target: i32,
+    r: &mut Vec<Vec<i32>>,
+    start: usize,
+) {
+    if path_sum > target {
+        return;
+    }
+
+    if path_sum == target {
+        r.push(path.clone());
+        return;
+    }
+
+    for i in 0..candidates.len() {
+        if i < start {
+            continue;
+        }
+        let n = candidates[i];
+        path.push(n);
+        path_sum += n;
+        combination_btrace(candidates, path, path_sum, target, r, i);
+        path_sum -= n;
+        path.pop();
+    }
+}
+
+pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+    let mut r: Vec<Vec<i32>> = Vec::new();
+
+    let mut path: Vec<i32> = Vec::new();
+    let path_sum = 0;
+    combination_btrace(&candidates, &mut path, path_sum, target, &mut r, 0);
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -163,5 +203,11 @@ mod tests {
     fn check_letter() {
         let e = letter_combinations("23".to_string());
         assert_eq!(e.len(), 9);
+    }
+
+    #[test]
+    fn check_combination_sum() {
+        let e = combination_sum(vec![2, 3, 6, 7], 7);
+        dbg!(e);
     }
 }
