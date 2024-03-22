@@ -157,6 +157,44 @@ pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
     r
 }
 
+fn generate_parenthesis_bts(
+    n: i32,
+    mut left: i32,
+    right: i32,
+    path: &mut Vec<char>,
+    r: &mut Vec<String>,
+) {
+    if path.len() == (2 * n as usize) {
+        r.push(char_array_to_string(path));
+        return;
+    }
+
+    if (n - left) > 0 {
+        path.push('(');
+        left += 1;
+        generate_parenthesis_bts(n, left, right + 1, path, r);
+        left -= 1;
+        path.pop();
+    }
+
+    if right > 0 {
+        path.push(')');
+        generate_parenthesis_bts(n, left, right - 1, path, r);
+        path.pop();
+    }
+}
+
+pub fn generate_parenthesis(n: i32) -> Vec<String> {
+    let mut r: Vec<String> = Vec::new();
+
+    let mut path: Vec<char> = Vec::new();
+    path.push('(');
+
+    generate_parenthesis_bts(n, 1, 1, &mut path, &mut r);
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -208,6 +246,12 @@ mod tests {
     #[test]
     fn check_combination_sum() {
         let e = combination_sum(vec![2, 3, 6, 7], 7);
+        dbg!(e);
+    }
+
+    #[test]
+    fn check_generate_parenthesism() {
+        let e = generate_parenthesis(3);
         dbg!(e);
     }
 }
