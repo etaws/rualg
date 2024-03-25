@@ -199,26 +199,33 @@ fn string_to_char_array(s: &str) -> Vec<char> {
     s.chars().collect()
 }
 
+pub struct Board<'a> {
+    bx: usize,
+    by: usize,
+    word: &'a Vec<char>,
+}
+
 fn exist_bts(
     m: &mut Vec<Vec<i32>>,
     x: usize,
     y: usize,
-    board: &Vec<Vec<char>>,
-    bx: usize,
-    by: usize,
     i: usize,
-    word: &Vec<char>,
+    b: &Board,
+    board: &Vec<Vec<char>>,
 ) -> bool {
     m[y][x] = 1;
 
-    if i == word.len() - 1 {
+    if i == b.word.len() - 1 {
         return true;
     }
 
+    let c = b.word.get(i + 1).unwrap();
+    let w_len = b.word.len();
+
     if x > 0 && m[y][x - 1] == 0 {
         let next = board[y][x - 1];
-        if (i + 1 != word.len()) && (word[i + 1] == next) {
-            let left = exist_bts(m, x - 1, y, board, bx, by, i + 1, word);
+        if (i + 1 != w_len) && (*c == next) {
+            let left = exist_bts(m, x - 1, y, i + 1, b, board);
             if left {
                 return true;
             }
@@ -227,28 +234,28 @@ fn exist_bts(
 
     if y > 0 && m[y - 1][x] == 0 {
         let next = board[y - 1][x];
-        if (i + 1 != word.len()) && (word[i + 1] == next) {
-            let up = exist_bts(m, x, y - 1, board, bx, by, i + 1, word);
+        if (i + 1 != w_len) && (*c == next) {
+            let up = exist_bts(m, x, y - 1, i + 1, b, board);
             if up {
                 return true;
             }
         }
     }
 
-    if x < bx && m[y][x + 1] == 0 {
+    if x < b.bx && m[y][x + 1] == 0 {
         let next = board[y][x + 1];
-        if (i + 1 != word.len()) && (word[i + 1] == next) {
-            let right = exist_bts(m, x + 1, y, board, bx, by, i + 1, word);
+        if (i + 1 != w_len) && (*c == next) {
+            let right = exist_bts(m, x + 1, y, i + 1, b, board);
             if right {
                 return true;
             }
         }
     }
 
-    if y < by && m[y + 1][x] == 0 {
+    if y < b.by && m[y + 1][x] == 0 {
         let next = board[y + 1][x];
-        if (i + 1 != word.len()) && (word[i + 1] == next) {
-            let down = exist_bts(m, x, y + 1, board, bx, by, i + 1, word);
+        if (i + 1 != w_len) && (*c == next) {
+            let down = exist_bts(m, x, y + 1, i + 1, b, board);
             if down {
                 return true;
             }
@@ -272,13 +279,15 @@ pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
     let w = string_to_char_array(&word);
 
     let by = board.len() - 1;
+
     for (y, row) in board.iter().enumerate() {
         let bx = row.len() - 1;
         for (x, c) in row.iter().enumerate() {
             if (*c) != w[0] {
                 continue;
             }
-            let b = exist_bts(&mut m, x, y, &board, bx, by, 0, &w);
+            let b: Board = Board { bx, by, word: &w };
+            let b = exist_bts(&mut m, x, y, 0, &b, &board);
             if b {
                 return true;
             }
