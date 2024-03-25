@@ -195,6 +195,99 @@ pub fn generate_parenthesis(n: i32) -> Vec<String> {
     r
 }
 
+fn string_to_char_array(s: &str) -> Vec<char> {
+    s.chars().collect()
+}
+
+fn exist_bts(
+    m: &mut Vec<Vec<i32>>,
+    x: usize,
+    y: usize,
+    board: &Vec<Vec<char>>,
+    bx: usize,
+    by: usize,
+    i: usize,
+    word: &Vec<char>,
+) -> bool {
+    m[y][x] = 1;
+
+    if i == word.len() - 1 {
+        return true;
+    }
+
+    if x > 0 && m[y][x - 1] == 0 {
+        let next = board[y][x - 1];
+        if (i + 1 != word.len()) && (word[i + 1] == next) {
+            let left = exist_bts(m, x - 1, y, board, bx, by, i + 1, word);
+            if left {
+                return true;
+            }
+        }
+    }
+
+    if y > 0 && m[y - 1][x] == 0 {
+        let next = board[y - 1][x];
+        if (i + 1 != word.len()) && (word[i + 1] == next) {
+            let up = exist_bts(m, x, y - 1, board, bx, by, i + 1, word);
+            if up {
+                return true;
+            }
+        }
+    }
+
+    if x < bx && m[y][x + 1] == 0 {
+        let next = board[y][x + 1];
+        if (i + 1 != word.len()) && (word[i + 1] == next) {
+            let right = exist_bts(m, x + 1, y, board, bx, by, i + 1, word);
+            if right {
+                return true;
+            }
+        }
+    }
+
+    if y < by && m[y + 1][x] == 0 {
+        let next = board[y + 1][x];
+        if (i + 1 != word.len()) && (word[i + 1] == next) {
+            let down = exist_bts(m, x, y + 1, board, bx, by, i + 1, word);
+            if down {
+                return true;
+            }
+        }
+    }
+
+    m[y][x] = 0;
+    false
+}
+
+pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
+    let mut m: Vec<Vec<i32>> = vec![
+        vec![0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0],
+    ];
+
+    let w = string_to_char_array(&word);
+
+    let by = board.len() - 1;
+    for (y, row) in board.iter().enumerate() {
+        let bx = row.len() - 1;
+        for (x, c) in row.iter().enumerate() {
+            if (*c) != w[0] {
+                continue;
+            }
+            let b = exist_bts(&mut m, x, y, &board, bx, by, 0, &w);
+            if b {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -253,5 +346,53 @@ mod tests {
     fn check_generate_parenthesism() {
         let e = generate_parenthesis(3);
         dbg!(e);
+    }
+
+    #[test]
+    fn check_exist() {
+        let v: Vec<Vec<char>> = vec![
+            vec!['A', 'B', 'C', 'E'],
+            vec!['S', 'F', 'C', 'S'],
+            vec!['A', 'D', 'E', 'E'],
+        ];
+
+        let e = exist(v, "ABCCED".to_string());
+        assert!(e);
+    }
+
+    #[test]
+    fn check_exis_2() {
+        let v: Vec<Vec<char>> = vec![
+            vec!['A', 'B', 'C', 'E'],
+            vec!['S', 'F', 'C', 'S'],
+            vec!['A', 'D', 'E', 'E'],
+        ];
+
+        let e = exist(v, "SEE".to_string());
+        assert!(e);
+    }
+
+    #[test]
+    fn check_exis_3() {
+        let v: Vec<Vec<char>> = vec![
+            vec!['A', 'B', 'C', 'E'],
+            vec!['S', 'F', 'C', 'S'],
+            vec!['A', 'D', 'E', 'E'],
+        ];
+
+        let e = exist(v, "ABCB".to_string());
+        assert!(!e);
+    }
+
+    #[test]
+    fn check_exis_4() {
+        let v: Vec<Vec<char>> = vec![
+            vec!['A', 'A', 'A', 'A'],
+            vec!['A', 'A', 'A', 'A'],
+            vec!['A', 'A', 'A', 'A'],
+        ];
+
+        let e = exist(v, "AAAAAAAAAAAAA".to_string());
+        assert!(!e);
     }
 }
