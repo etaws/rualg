@@ -306,6 +306,45 @@ pub fn insertion_sort(a: &mut [usize]) {
     }
 }
 
+pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
+    if nums.is_empty() {
+        return -1;
+    }
+
+    let j = nums.len() - 1;
+    search_insert_bts(&nums, 0, j, target)
+}
+
+pub fn search_insert_bts(nums: &Vec<i32>, i: usize, j: usize, target: i32) -> i32 {
+    if target > nums[j] {
+        return (j + 1) as i32;
+    }
+
+    if target < nums[i] {
+        return (i as i32) - 1;
+    }
+
+    if target == nums[i] {
+        return i as i32;
+    }
+
+    if target == nums[j] {
+        return j as i32;
+    }
+
+    if (i + 1) == j {
+        return j as i32;
+    }
+
+    let k = (i + j) / 2;
+
+    if target > nums[k] {
+        search_insert_bts(nums, k, j, target)
+    } else {
+        search_insert_bts(nums, i, k, target)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -496,5 +535,20 @@ mod tests {
         assert_eq!(b.len(), 9);
         assert_eq!(b[0], vec![-4, 0, 4]);
         assert_eq!(b[1], vec![-4, 1, 3]);
+    }
+
+    #[test]
+    fn check_search_insert() {
+        let r = search_insert(vec![1, 3, 5, 6], 3);
+        assert_eq!(r, 1);
+
+        let r_1 = search_insert(vec![1, 3, 5, 6], 5);
+        assert_eq!(r_1, 2);
+
+        let r_2 = search_insert(vec![1, 3, 5, 6], 2);
+        assert_eq!(r_2, 1);
+
+        let r_3 = search_insert(vec![1, 3, 5, 6], 7);
+        assert_eq!(r_3, 4);
     }
 }
