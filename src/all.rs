@@ -297,6 +297,59 @@ pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
     false
 }
 
+fn is_palindrome(s: &str, left: usize, right: usize) -> bool {
+    if left == right {
+        return true;
+    }
+
+    let mut i = left;
+    let mut j = right;
+
+    while i < j {
+        let v = s.chars().nth(i).unwrap();
+        let u = s.chars().nth(j).unwrap();
+        if v != u {
+            return false;
+        }
+
+        i += 1;
+        j -= 1;
+    }
+
+    true
+}
+
+fn partition_bts(path: &mut Vec<String>, s: &str, i: usize, j: usize, r: &mut Vec<Vec<String>>) {
+    if i > (s.len() - 1) {
+        r.push(path.clone());
+        return;
+    }
+
+    for k in i..(j + 1) {
+        if is_palindrome(s, i, k) {
+            path.push(s[i..(k + 1)].to_string());
+            partition_bts(path, s, k + 1, j, r);
+            path.pop();
+        }
+    }
+}
+
+pub fn partition(s: String) -> Vec<Vec<String>> {
+    let mut r: Vec<Vec<String>> = Vec::new();
+
+    let j = s.len() - 1;
+
+    for i in 0..(j + 1) {
+        if is_palindrome(&s, 0, i) {
+            let mut path: Vec<String> = Vec::new();
+            path.push(s[0..(i + 1)].to_string());
+            partition_bts(&mut path, &s, i + 1, j, &mut r);
+        }
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -403,5 +456,11 @@ mod tests {
 
         let e = exist(v, "AAAAAAAAAAAAA".to_string());
         assert!(!e);
+    }
+
+    #[test]
+    fn check_partition() {
+        let e = partition("aab".to_string());
+        dbg!(e);
     }
 }
