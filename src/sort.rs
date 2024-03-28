@@ -311,38 +311,26 @@ pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
         return -1;
     }
 
-    let j = nums.len() - 1;
-    search_insert_bts(&nums, 0, j, target)
-}
+    let mut i: i32 = 0;
+    let mut j: i32 = (nums.len() as i32) - 1;
 
-pub fn search_insert_bts(nums: &Vec<i32>, i: usize, j: usize, target: i32) -> i32 {
-    if target > nums[j] {
-        return (j + 1) as i32;
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        match target.cmp(&nums[mid as usize]) {
+            Ordering::Greater => {
+                i = mid + 1;
+            }
+            Ordering::Less => {
+                j = mid - 1;
+            }
+            Ordering::Equal => {
+                return mid;
+            }
+        }
     }
 
-    if target < nums[i] {
-        return (i as i32) - 1;
-    }
-
-    if target == nums[i] {
-        return i as i32;
-    }
-
-    if target == nums[j] {
-        return j as i32;
-    }
-
-    if (i + 1) == j {
-        return j as i32;
-    }
-
-    let k = (i + j) / 2;
-
-    if target > nums[k] {
-        search_insert_bts(nums, k, j, target)
-    } else {
-        search_insert_bts(nums, i, k, target)
-    }
+    i
 }
 
 pub fn search(nums: Vec<i32>, target: i32) -> i32 {
@@ -562,28 +550,23 @@ mod tests {
 
     #[test]
     fn check_search_insert() {
-        let r = search_insert(vec![1, 3, 5, 6], 3);
-        assert_eq!(r, 1);
+        assert_eq!(search_insert(vec![1, 3, 5, 6], 3), 1);
 
-        let r_1 = search_insert(vec![1, 3, 5, 6], 5);
-        assert_eq!(r_1, 2);
+        assert_eq!(search_insert(vec![1, 3, 5, 6], 5), 2);
 
-        let r_2 = search_insert(vec![1, 3, 5, 6], 2);
-        assert_eq!(r_2, 1);
+        assert_eq!(search_insert(vec![1, 3, 5, 6], 2), 1);
 
-        let r_3 = search_insert(vec![1, 3, 5, 6], 7);
-        assert_eq!(r_3, 4);
+        assert_eq!(search_insert(vec![1, 3, 5, 6], 7), 4);
+
+        assert_eq!(search_insert(vec![2, 3, 5, 6], 1), 0);
     }
 
     #[test]
     fn check_search() {
-        let r = search(vec![-1, 0, 3, 5, 9, 12], 9);
-        assert_eq!(r, 4);
+        assert_eq!(search(vec![-1, 0, 3, 5, 9, 12], 9), 4);
 
-        let r_1 = search(vec![-1, 0, 3, 5, 9, 12], 2);
-        assert_eq!(r_1, -1);
+        assert_eq!(search(vec![-1, 0, 3, 5, 9, 12], 2), -1);
 
-        let r_2 = search(vec![5], -5);
-        assert_eq!(r_2, -1);
+        assert_eq!(search(vec![5], -5), -1);
     }
 }
