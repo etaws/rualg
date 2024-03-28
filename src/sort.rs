@@ -345,6 +345,29 @@ pub fn search_insert_bts(nums: &Vec<i32>, i: usize, j: usize, target: i32) -> i3
     }
 }
 
+pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+    let mut i: i32 = 0;
+    let mut j: i32 = (nums.len() as i32) - 1;
+
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        match target.cmp(&nums[mid as usize]) {
+            Ordering::Greater => {
+                i = mid + 1;
+            }
+            Ordering::Less => {
+                j = mid - 1;
+            }
+            Ordering::Equal => {
+                return mid;
+            }
+        }
+    }
+
+    -1
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -550,5 +573,17 @@ mod tests {
 
         let r_3 = search_insert(vec![1, 3, 5, 6], 7);
         assert_eq!(r_3, 4);
+    }
+
+    #[test]
+    fn check_search() {
+        let r = search(vec![-1, 0, 3, 5, 9, 12], 9);
+        assert_eq!(r, 4);
+
+        let r_1 = search(vec![-1, 0, 3, 5, 9, 12], 2);
+        assert_eq!(r_1, -1);
+
+        let r_2 = search(vec![5], -5);
+        assert_eq!(r_2, -1);
     }
 }
