@@ -306,13 +306,15 @@ pub fn insertion_sort(a: &mut [usize]) {
     }
 }
 
-pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
-    if nums.is_empty() {
+pub fn search_insert(nums: &[i32], target: i32) -> i32 {
+    let len = nums.len();
+
+    if len == 0 {
         return -1;
     }
 
     let mut i: i32 = 0;
-    let mut j: i32 = (nums.len() as i32) - 1;
+    let mut j: i32 = (len as i32) - 1;
 
     while i <= j {
         let mid = i + (j - i) / 2;
@@ -333,7 +335,7 @@ pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
     i
 }
 
-pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+pub fn search(nums: &[i32], target: i32) -> i32 {
     let mut i: i32 = 0;
     let mut j: i32 = (nums.len() as i32) - 1;
 
@@ -354,6 +356,48 @@ pub fn search(nums: Vec<i32>, target: i32) -> i32 {
     }
 
     -1
+}
+
+pub fn search_insert_first(first: &[i32], target: i32) -> i32 {
+    let i = search_insert(first, target);
+
+    if i == 0 {
+        if target == first[0] {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    let len = first.len();
+    if i >= (len as i32) {
+        return i - 1;
+    }
+
+    if target == first[i as usize] {
+        i
+    } else {
+        i - 1
+    }
+}
+
+pub fn search_matrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
+    let mut first: Vec<i32> = Vec::new();
+
+    let mut j = 0;
+    while j < matrix.len() {
+        first.push(matrix[j][0]);
+        j += 1;
+    }
+
+    let i = search_insert_first(&first, target);
+    if i == -1 {
+        return false;
+    }
+
+    let k = search(&matrix[i as usize], target);
+
+    k != -1
 }
 
 #[cfg(test)]
@@ -550,23 +594,42 @@ mod tests {
 
     #[test]
     fn check_search_insert() {
-        assert_eq!(search_insert(vec![1, 3, 5, 6], 3), 1);
+        let v = vec![1, 3, 5, 6];
 
-        assert_eq!(search_insert(vec![1, 3, 5, 6], 5), 2);
-
-        assert_eq!(search_insert(vec![1, 3, 5, 6], 2), 1);
-
-        assert_eq!(search_insert(vec![1, 3, 5, 6], 7), 4);
-
-        assert_eq!(search_insert(vec![2, 3, 5, 6], 1), 0);
+        assert_eq!(search_insert(&v, 3), 1);
+        assert_eq!(search_insert(&v, 5), 2);
+        assert_eq!(search_insert(&v, 2), 1);
+        assert_eq!(search_insert(&v, 7), 4);
+        assert_eq!(search_insert(&v, 1), 0);
     }
 
     #[test]
     fn check_search() {
-        assert_eq!(search(vec![-1, 0, 3, 5, 9, 12], 9), 4);
+        let v = vec![-1, 0, 3, 5, 9, 12];
+        assert_eq!(search(&v, 9), 4);
+        assert_eq!(search(&v, 2), -1);
 
-        assert_eq!(search(vec![-1, 0, 3, 5, 9, 12], 2), -1);
+        assert_eq!(search(&[5], -5), -1);
+    }
 
-        assert_eq!(search(vec![5], -5), -1);
+    #[test]
+    fn check_search_matrix() {
+        assert!(!search_matrix(vec![vec![1]], 0));
+        assert!(search_matrix(vec![vec![1]], 1));
+
+        assert!(search_matrix(
+            vec![vec![2, 3, 5, 7], vec![10, 11, 16, 20], vec![23, 30, 34, 60]],
+            2
+        ));
+
+        assert!(search_matrix(
+            vec![vec![2, 3, 5, 7], vec![10, 11, 16, 20], vec![23, 30, 34, 60]],
+            30
+        ));
+
+        assert!(!search_matrix(
+            vec![vec![2, 3, 5, 7], vec![10, 11, 16, 20], vec![23, 30, 34, 60]],
+            21
+        ));
     }
 }
