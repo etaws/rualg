@@ -765,17 +765,13 @@ mod tests {
 
     #[test]
     fn check_search_range() {
-        let v = vec![5, 7, 7, 8, 8, 10];
-        let r = search_range(v, 6);
-
-        dbg!(r);
+        assert_eq!(search_range(vec![5, 7, 7, 8, 8, 10], 8), vec![3, 4]);
+        assert_eq!(search_range(vec![5, 7, 7, 8, 8, 10], 6), vec![-1, -1]);
     }
 
     #[test]
     fn check_search_range_2() {
-        let v = vec![1, 4];
-        let r = search_range(v, 4);
-
-        dbg!(r);
+        assert_eq!(search_range(vec![1, 4], 4), vec![1, 1]);
+        assert_eq!(search_range(vec![1], 1), vec![0, 0]);
     }
 }
