@@ -358,6 +358,100 @@ pub fn search(nums: &[i32], target: i32) -> i32 {
     -1
 }
 
+pub fn search_small(nums: &[i32], len: usize, target: i32) -> i32 {
+    let mut i: i32 = 0;
+    let mut j: i32 = (nums.len() as i32) - 1;
+
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        let m = nums[mid as usize];
+
+        if m < target {
+            i = mid + 1;
+        } else if m >= target {
+            j = mid - 1;
+        }
+    }
+
+    if j >= len as i32 {
+        -1
+    } else {
+        j
+    }
+}
+
+pub fn search_big(nums: &[i32], len: usize, target: i32) -> i32 {
+    let mut i: i32 = 0;
+    let mut j: i32 = (nums.len() as i32) - 1;
+
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        match target.cmp(&nums[mid as usize]) {
+            Ordering::Greater => {
+                i = mid + 1;
+            }
+            Ordering::Less => {
+                j = mid - 1;
+            }
+            Ordering::Equal => {
+                i = mid + 1;
+            }
+        }
+    }
+
+    if i == 0 {
+        return -1;
+    }
+
+    if i >= len as i32 {
+        len as i32
+    } else {
+        i
+    }
+}
+
+pub fn search_range(nums: Vec<i32>, target: i32) -> Vec<i32> {
+    let mut v: Vec<i32> = Vec::new();
+
+    let mut i: i32 = 0;
+    let mut j: i32 = (nums.len() as i32) - 1;
+
+    let mut r = -1;
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        match target.cmp(&nums[mid as usize]) {
+            Ordering::Greater => {
+                i = mid + 1;
+            }
+            Ordering::Less => {
+                j = mid - 1;
+            }
+            Ordering::Equal => {
+                r = mid;
+                break;
+            }
+        }
+    }
+
+    if r == -1 {
+        v.push(-1);
+        v.push(-1);
+
+        return v;
+    }
+
+    let i = search_small(&nums, nums.len(), target);
+    let j = search_big(&nums, nums.len(), target);
+
+    v.push(i + 1);
+    v.push(j - 1);
+
+    v
+}
+
 pub fn search_insert_first(first: &[i32], target: i32) -> i32 {
     let i = search_insert(first, target);
 
@@ -631,5 +725,57 @@ mod tests {
             vec![vec![2, 3, 5, 7], vec![10, 11, 16, 20], vec![23, 30, 34, 60]],
             21
         ));
+    }
+
+    #[test]
+    fn check_search_big() {
+        let v = vec![-1, 0, 3, 5, 9, 12];
+        assert_eq!(search_big(&v, v.len(), 9), 5);
+        assert_eq!(search_big(&v, v.len(), 2), 2);
+        assert_eq!(search_big(&v, v.len(), 5), 4);
+    }
+
+    #[test]
+    fn check_search_big_2() {
+        let v = vec![-1, 0, 3, 5, 9, 9, 12];
+        assert_eq!(search_big(&v, v.len(), 9), 6);
+        assert_eq!(search_big(&v, v.len(), 12), 7);
+        assert_eq!(search_big(&v, v.len(), 5), 4);
+
+        assert_eq!(search_big(&v, v.len(), -1), 1);
+        assert_eq!(search_big(&v, v.len(), -2), -1);
+    }
+
+    #[test]
+    fn check_search_small() {
+        let v = vec![-1, 0, 3, 5, 9, 9, 12];
+        assert_eq!(search_small(&v, v.len(), 9), 3);
+        assert_eq!(search_small(&v, v.len(), 12), 5);
+        assert_eq!(search_small(&v, v.len(), 5), 2);
+
+        assert_eq!(search_small(&v, v.len(), -1), -1);
+        assert_eq!(search_small(&v, v.len(), -2), -1);
+    }
+
+    #[test]
+    fn check_search_small_1() {
+        let v = vec![1, 4];
+        assert_eq!(search_small(&v, v.len(), 4), 0);
+    }
+
+    #[test]
+    fn check_search_range() {
+        let v = vec![5, 7, 7, 8, 8, 10];
+        let r = search_range(v, 6);
+
+        dbg!(r);
+    }
+
+    #[test]
+    fn check_search_range_2() {
+        let v = vec![1, 4];
+        let r = search_range(v, 4);
+
+        dbg!(r);
     }
 }
