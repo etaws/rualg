@@ -358,6 +358,29 @@ pub fn search(nums: &[i32], target: i32) -> i32 {
     -1
 }
 
+pub fn search_r(nums: &[i32], left: i32, right: i32, target: i32) -> i32 {
+    let mut i = left;
+    let mut j = right;
+
+    while i <= j {
+        let mid = i + (j - i) / 2;
+
+        match target.cmp(&nums[mid as usize]) {
+            Ordering::Greater => {
+                i = mid + 1;
+            }
+            Ordering::Less => {
+                j = mid - 1;
+            }
+            Ordering::Equal => {
+                return mid;
+            }
+        }
+    }
+
+    -1
+}
+
 pub fn search_small(nums: &[i32], len: usize, target: i32) -> i32 {
     let mut i: i32 = 0;
     let mut j: i32 = (nums.len() as i32) - 1;
@@ -492,6 +515,49 @@ pub fn search_matrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
     let k = search(&matrix[i as usize], target);
 
     k != -1
+}
+
+pub fn search_k(nums: &[i32], len: usize) -> i32 {
+    if len == 0 || len == 1 {
+        return 0;
+    }
+
+    let mut i: i32 = 0;
+    let mut j: i32 = (len as i32) - 1;
+
+    while i < j {
+        let mid = (i + (j - i) / 2) as usize;
+
+        if nums[mid] > nums[j as usize] {
+            i = mid as i32 + 1;
+        } else if nums[mid] <= nums[i as usize] {
+            j = mid as i32;
+        } else if (nums[mid] >= nums[i as usize]) && (nums[mid] < nums[j as usize]) {
+            break;
+        }
+    }
+
+    i
+}
+
+pub fn search_g(nums: Vec<i32>, target: i32) -> i32 {
+    let right = nums.len() as i32 - 1;
+    if right == 0 {
+        return search_r(&nums, 0, 0, target);
+    }
+
+    let k = search_k(&nums, nums.len());
+
+    if k == 0 {
+        return search_r(&nums, 0, right, target);
+    }
+
+    let v = search_r(&nums, 0, k - 1, target);
+    if v != -1 {
+        return v;
+    }
+
+    search_r(&nums, k, right, target)
 }
 
 #[cfg(test)]
@@ -773,5 +839,33 @@ mod tests {
     fn check_search_range_2() {
         assert_eq!(search_range(vec![1, 4], 4), vec![1, 1]);
         assert_eq!(search_range(vec![1], 1), vec![0, 0]);
+    }
+
+    #[test]
+    fn check_search_k() {
+        assert_eq!(search_k(&[1], 0), 0);
+        assert_eq!(search_k(&[1, 4], 2), 0);
+        assert_eq!(search_k(&[1, 3, 4], 3), 0);
+
+        assert_eq!(search_k(&[4, 1], 2), 1);
+        assert_eq!(search_k(&[4, 3, 1], 3), 2);
+
+        assert_eq!(search_k(&[4, 5, 6, 7, 0, 1, 2], 7), 4);
+
+        assert_eq!(search_k(&[5, 1, 3], 3), 1);
+        let v = vec![5, 1, 3];
+        let r = search_k(&v, v.len());
+        dbg!(r);
+    }
+
+    #[test]
+    fn check_search_g() {
+        assert_eq!(search_g(vec![4, 5, 6, 7, 0, 1, 2], 0), 4);
+        assert_eq!(search_g(vec![4, 5, 6, 7, 0, 1, 2], 3), -1);
+        assert_eq!(search_g(vec![1], 0), -1);
+
+        let v = vec![5, 1, 3];
+        let r = search_g(v, 5);
+        dbg!(r);
     }
 }
