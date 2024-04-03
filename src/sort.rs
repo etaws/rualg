@@ -560,6 +560,31 @@ pub fn search_g(nums: Vec<i32>, target: i32) -> i32 {
     search_r(&nums, k, right, target)
 }
 
+pub fn find_min(nums: Vec<i32>) -> i32 {
+    let len = nums.len();
+
+    if len == 0 || len == 1 {
+        return nums[0];
+    }
+
+    let mut i: usize = 0;
+    let mut j: usize = len - 1;
+
+    while i < j {
+        let mid = i + (j - i) / 2;
+
+        if nums[mid] > nums[j] {
+            i = mid + 1;
+        } else if nums[mid] <= nums[i] {
+            j = mid;
+        } else if (nums[mid] >= nums[i]) && (nums[mid] < nums[j]) {
+            break;
+        }
+    }
+
+    nums[i]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -867,5 +892,21 @@ mod tests {
         let v = vec![5, 1, 3];
         let r = search_g(v, 5);
         dbg!(r);
+    }
+
+    #[test]
+    fn check_find_min() {
+        assert_eq!(find_min(vec![1]), 1);
+        assert_eq!(find_min(vec![1, 4]), 1);
+        assert_eq!(find_min(vec![1, 3, 4]), 1);
+
+        assert_eq!(find_min(vec![4, 1]), 1);
+        assert_eq!(find_min(vec![4, 3, 1]), 1);
+
+        assert_eq!(find_min(vec![4, 5, 6, 7, 0, 1, 2]), 0);
+
+        assert_eq!(find_min(vec![3, 4, 5, 1, 2]), 1);
+
+        assert_eq!(find_min(vec![11, 13, 15, 17]), 11);
     }
 }
