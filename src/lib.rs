@@ -3,6 +3,7 @@ pub mod all;
 pub mod bits;
 pub mod decode;
 pub mod disappear;
+pub mod lru;
 pub mod merge;
 pub mod merge_list;
 pub mod ministack;
