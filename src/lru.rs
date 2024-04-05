@@ -73,6 +73,41 @@ impl MyLinkedList {
         -1
     }
 
+    pub fn touch(&mut self, val: i32) {
+        if self.len == 0 {
+            return;
+        }
+
+        let mut cur = self.head.as_ref().unwrap().clone();
+        let v = cur.borrow().val;
+        if v == val {
+            return;
+        }
+
+        let len = self.len;
+        let mut is_touch = false;
+        for _ in 0..len {
+            let p = cur.borrow().next.as_ref().unwrap().clone();
+            let v = p.borrow().val;
+            if v == val {
+                cur = p;
+                is_touch = true;
+                break;
+            }
+            cur = p;
+        }
+
+        if is_touch {
+            let prev_node = cur.borrow_mut().prev.as_ref().unwrap().clone();
+            let next_node = cur.borrow_mut().next.as_ref().unwrap().clone();
+
+            next_node.borrow_mut().prev = Some(prev_node.clone());
+            prev_node.borrow_mut().next = Some(next_node);
+
+            self.add_at_head(val);
+        }
+    }
+
     pub fn get(&self, index: i32) -> i32 {
         let i: usize = index as usize;
         if i >= self.len {
@@ -286,5 +321,12 @@ mod tests {
         assert_eq!(my.find(5), 0);
         assert_eq!(my.find(7), 3);
         assert_eq!(my.find(2), 1);
+
+        my.touch(7);
+        assert_eq!(my.get(0), 7);
+        assert_eq!(my.get(1), 5);
+        assert_eq!(my.get(2), 2);
+        assert_eq!(my.get(3), 3);
+        assert_eq!(my.get(4), 2);
     }
 }
