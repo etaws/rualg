@@ -48,6 +48,31 @@ impl MyLinkedList {
         self.head.is_none()
     }
 
+    pub fn find(&self, val: i32) -> i32 {
+        if self.len == 0 {
+            return -1;
+        }
+
+        let mut cur = self.head.as_ref().unwrap().clone();
+        let v = cur.borrow().val;
+        if v == val {
+            return 0;
+        }
+
+        let len = self.len;
+        for i in 0..len {
+            let p = cur.borrow().next.as_ref().unwrap().clone();
+            let v = p.borrow().val;
+            if v == val {
+                return (i + 1) as i32;
+            }
+
+            cur = p;
+        }
+
+        -1
+    }
+
     pub fn get(&self, index: i32) -> i32 {
         let i: usize = index as usize;
         if i >= self.len {
@@ -257,5 +282,9 @@ mod tests {
         assert_eq!(my.get(2), 3);
         assert_eq!(my.get(3), 7);
         assert_eq!(my.get(4), 2);
+
+        assert_eq!(my.find(5), 0);
+        assert_eq!(my.find(7), 3);
+        assert_eq!(my.find(2), 1);
     }
 }
