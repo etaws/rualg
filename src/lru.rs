@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::collections::VecDeque;
 use std::rc::Rc;
 
 pub struct ListNode {
@@ -256,22 +257,37 @@ impl MyLinkedList {
 
 pub struct LRUCache {
     pub m: HashMap<i32, i32>,
-    pub lru: MyLinkedList,
+    pub lru: VecDeque<i32>,
     pub capacity: i32,
+}
+
+fn find_element_index_in_vecdeque<T>(deque: &VecDeque<T>, target: &T) -> Option<usize>
+where
+    T: std::cmp::PartialEq,
+{
+    deque
+        .iter()
+        .enumerate()
+        .find(|&(_, item)| item == target)
+        .map(|(index, _)| index)
 }
 
 impl LRUCache {
     pub fn new(capacity: i32) -> Self {
         LRUCache {
             m: HashMap::new(),
-            lru: MyLinkedList::new(),
+            lru: VecDeque::with_capacity(capacity as usize),
             capacity,
         }
     }
 
     pub fn get(&mut self, key: i32) -> i32 {
         if let Some(v) = self.m.get(&key) {
-            self.lru.touch(key);
+            let index = find_element_index_in_vecdeque(&self.lru, &key);
+            if let Some(idx) = index {
+                self.lru.remove(idx);
+                self.lru.push_back(key);
+            }
             *v
         } else {
             -1
@@ -281,18 +297,23 @@ impl LRUCache {
     pub fn put(&mut self, key: i32, value: i32) {
         if let Some(v) = self.m.get_mut(&key) {
             *v = value;
-            self.lru.touch(key);
+            let index = find_element_index_in_vecdeque(&self.lru, &key);
+            if let Some(idx) = index {
+                self.lru.remove(idx);
+                self.lru.push_back(key);
+            }
             return;
         }
 
         if self.lru.len() as i32 >= self.capacity {
-            let last = self.lru.len() as i32 - 1;
-            let tail_key = self.lru.delete_at_index(last);
-            self.m.remove(&tail_key);
+            let first = self.lru.pop_front();
+            if let Some(v) = first {
+                self.m.remove(&v);
+            }
         }
 
         self.m.insert(key, value);
-        self.lru.add_at_head(key);
+        self.lru.push_back(key);
     }
 }
 
