@@ -259,17 +259,7 @@ pub struct LRUCache {
     pub m: HashMap<i32, i32>,
     pub lru: VecDeque<i32>,
     pub capacity: i32,
-}
-
-fn find_element_index_in_vecdeque<T>(deque: &VecDeque<T>, target: &T) -> Option<usize>
-where
-    T: std::cmp::PartialEq,
-{
-    deque
-        .iter()
-        .enumerate()
-        .find(|&(_, item)| item == target)
-        .map(|(index, _)| index)
+    pub count: HashMap<i32, usize>,
 }
 
 impl LRUCache {
@@ -278,15 +268,15 @@ impl LRUCache {
             m: HashMap::new(),
             lru: VecDeque::with_capacity(capacity as usize),
             capacity,
+            count: HashMap::new(),
         }
     }
 
     pub fn get(&mut self, key: i32) -> i32 {
         if let Some(v) = self.m.get(&key) {
-            let index = find_element_index_in_vecdeque(&self.lru, &key);
-            if let Some(idx) = index {
-                self.lru.remove(idx);
-                self.lru.push_back(key);
+            self.lru.push_back(key);
+            if let Some(cv) = self.count.get_mut(&key) {
+                *cv += 1;
             }
             *v
         } else {
@@ -297,23 +287,33 @@ impl LRUCache {
     pub fn put(&mut self, key: i32, value: i32) {
         if let Some(v) = self.m.get_mut(&key) {
             *v = value;
-            let index = find_element_index_in_vecdeque(&self.lru, &key);
-            if let Some(idx) = index {
-                self.lru.remove(idx);
-                self.lru.push_back(key);
+            self.lru.push_back(key);
+            if let Some(cv) = self.count.get_mut(&key) {
+                *cv += 1;
             }
             return;
         }
 
-        if self.lru.len() as i32 >= self.capacity {
-            let first = self.lru.pop_front();
-            if let Some(v) = first {
-                self.m.remove(&v);
+        if self.m.len() as i32 >= self.capacity {
+            let mut first = self.lru.pop_front();
+            while let Some(v) = first {
+                if self.count.get(&v).unwrap() == &1 {
+                    self.m.remove(&v);
+                    self.count.remove(&v);
+                    break;
+                }
+
+                if let Some(cv) = self.count.get_mut(&v) {
+                    *cv -= 1;
+                }
+
+                first = self.lru.pop_front();
             }
         }
 
         self.m.insert(key, value);
         self.lru.push_back(key);
+        self.count.insert(key, 1);
     }
 }
 
@@ -440,7 +440,7 @@ mod tests {
         lru.put(6, 11);
         lru.put(10, 5);
         lru.put(9, 10);
-        assert_eq!(lru.lru.len(), 4);
+        assert_eq!(lru.m.len(), 4);
 
         assert_eq!(lru.get(10), 5);
 
