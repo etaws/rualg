@@ -1,3 +1,5 @@
+use std::collections::{HashSet, VecDeque};
+
 pub fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
     let mut r: Vec<Vec<i32>> = Vec::new();
 
@@ -195,10 +197,6 @@ pub fn generate_parenthesis(n: i32) -> Vec<String> {
     r
 }
 
-fn string_to_char_array(s: &str) -> Vec<char> {
-    s.chars().collect()
-}
-
 pub struct Board<'a> {
     bx: usize,
     by: usize,
@@ -350,6 +348,184 @@ pub fn partition(s: String) -> Vec<Vec<String>> {
     r
 }
 
+fn string_to_char_array(s: &str) -> Vec<char> {
+    s.chars().collect()
+}
+
+pub fn check_good_parentheses(s: &[char]) -> (usize, usize) {
+    let mut left = 0;
+    let mut right = 0;
+
+    for c in s.iter() {
+        if (*c != '(') && (*c != ')') {
+            continue;
+        }
+
+        if *c == '(' {
+            left += 1;
+        }
+
+        if *c == ')' {
+            if left == 0 {
+                right += 1;
+            } else {
+                left -= 1;
+            }
+        }
+    }
+
+    (left, right)
+}
+
+pub fn parentheses_num(s: &[char]) -> (usize, usize) {
+    let mut left = 0;
+    let mut right = 0;
+
+    for c in s.iter() {
+        if (*c != '(') && (*c != ')') {
+            continue;
+        }
+
+        if *c == '(' {
+            left += 1;
+        }
+
+        if *c == ')' {
+            right += 1;
+        }
+    }
+
+    (left, right)
+}
+
+pub fn is_good_parentheses(s: &[char]) -> bool {
+    let mut l = 0;
+
+    for c in s.iter() {
+        if (*c != '(') && (*c != ')') {
+            continue;
+        }
+
+        if *c == '(' {
+            l += 1;
+        }
+
+        if *c == ')' {
+            if l == 0 {
+                return false;
+            } else {
+                l -= 1;
+            }
+        }
+    }
+
+    true
+}
+
+pub fn to_good_string(w: &[char]) -> String {
+    let mut s = "".to_string();
+    for c in w.iter() {
+        s.push(*c);
+    }
+
+    s
+}
+
+pub fn shink_one(v: &[char], i: usize) -> Vec<char> {
+    let mut r: Vec<char> = Vec::new();
+
+    for (j, c) in v.iter().enumerate() {
+        if j != i {
+            r.push(*c);
+        }
+    }
+    r
+}
+
+pub fn remove_invalid_parentheses(s: String) -> Vec<String> {
+    let mut rv: Vec<String> = Vec::new();
+
+    let len = s.len();
+
+    let w = string_to_char_array(&s);
+
+    let (left, right) = check_good_parentheses(&w);
+    if len == left + right {
+        return vec!["".to_string()];
+    }
+
+    if left + right == 0 {
+        return vec![s];
+    }
+
+    let expect_len = len - left - right;
+
+    let mut stack: VecDeque<(Vec<char>, usize, usize, usize, usize)> = VecDeque::new();
+    stack.push_back((w, 0, 0, 0, 0));
+
+    while !stack.is_empty() {
+        let sz = stack.len();
+        let mut found = false;
+        let mut vtd: HashSet<Vec<char>> = HashSet::new();
+        for _ in 0..sz {
+            let (cur, l, r, open, close) = stack.pop_front().unwrap();
+            if expect_len > cur.len() {
+                continue;
+            }
+
+            if l == left && r == right && is_good_parentheses(&cur) {
+                let ok_str = to_good_string(&cur);
+                found = true;
+                if !rv.contains(&ok_str) {
+                    rv.push(ok_str);
+                }
+                continue;
+            }
+
+            if found {
+                continue;
+            }
+            if expect_len == cur.len() {
+                continue;
+            }
+
+            for (i, c) in cur.iter().enumerate() {
+                if *c != '(' && *c != ')' {
+                    continue;
+                }
+
+                if i > 0 && *c == cur[i - 1] {
+                    continue;
+                }
+
+                if *c == '(' && l == left {
+                    continue;
+                }
+
+                if *c == ')' && r == right {
+                    continue;
+                }
+
+                let one = shink_one(&cur, i);
+
+                if *c == '(' && !vtd.contains(&one) {
+                    vtd.insert(one.clone());
+                    stack.push_back((one, l + 1, r, open + 1, close));
+                } else if *c == ')' && !vtd.contains(&one) {
+                    vtd.insert(one.clone());
+                    stack.push_back((one, l, r + 1, open, close + 1));
+                }
+            }
+        }
+
+        if found {
+            break;
+        }
+    }
+
+    rv
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -462,5 +638,90 @@ mod tests {
     fn check_partition() {
         let e = partition("aab".to_string());
         dbg!(e);
+    }
+
+    #[test]
+    fn check_good_parentheses_test() {
+        assert_eq!(check_good_parentheses(&string_to_char_array(")(f")), (1, 1));
+        assert_eq!(
+            check_good_parentheses(&string_to_char_array("(a)())()")),
+            (0, 1)
+        );
+        assert_eq!(
+            check_good_parentheses(&string_to_char_array("()())()")),
+            (0, 1)
+        );
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses() {
+        let e = remove_invalid_parentheses("(a)())()".to_string());
+        assert_eq!(e, (vec!["(a())()".to_string(), "(a)()()".to_string()]));
+        dbg!(e);
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_0() {
+        let e = remove_invalid_parentheses("(a)())()".to_string());
+        assert_eq!(e, (vec!["(a())()".to_string(), "(a)()()".to_string()]));
+        dbg!(e);
+
+        let f = remove_invalid_parentheses("()())()".to_string());
+        assert_eq!(f, (vec!["(())()".to_string(), "()()()".to_string()]));
+        dbg!(f);
+
+        assert_eq!(
+            remove_invalid_parentheses(")(f".to_string()),
+            (vec!["f".to_string()])
+        );
+        assert_eq!(
+            remove_invalid_parentheses(")(".to_string()),
+            (vec!["".to_string()])
+        );
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_1() {
+        let g = remove_invalid_parentheses(")()))(e)(()y(".to_string());
+        assert_eq!(g, (vec!["()(e)()y".to_string()]));
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_2() {
+        let h = remove_invalid_parentheses("()(s(()".to_string());
+        assert_eq!(h, (vec!["()s()".to_string(), "()(s)".to_string()]));
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_3() {
+        let mut h = remove_invalid_parentheses("))(((((()())(()".to_string());
+        h.sort();
+        assert_eq!(h, (vec!["(((())))", "((()()))", "((()))()", "(()())()"]));
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_4() {
+        let mut h = remove_invalid_parentheses(")k)))())()())))())".to_string());
+        h.sort();
+        assert_eq!(
+            h,
+            (vec![
+                "k((())())",
+                "k((()))()",
+                "k(()()())",
+                "k(()())()",
+                "k()(()())",
+                "k()(())()",
+                "k()()(())",
+                "k()()()()"
+            ])
+        );
+    }
+
+    #[test]
+    fn check_remove_invalid_parentheses_5() {
+        let mut h = remove_invalid_parentheses(")()m)(((()((()((((".to_string());
+        h.sort();
+        assert_eq!(h, (vec!["()m(())", "()m()()", "(m)(())", "(m)()()"]));
     }
 }
