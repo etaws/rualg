@@ -93,6 +93,7 @@ mod tests {
         // negative
         assert!(!is_valid("(]".to_string()));
         assert!(!is_valid("{[{[{}]".to_string()));
+        assert!(!is_valid("{(})".to_string()));
     }
 
     #[test]
