@@ -79,6 +79,16 @@ pub fn daily_temperatures(temperatures: Vec<i32>) -> Vec<i32> {
     r
 }
 
+pub fn single_number(nums: Vec<i32>) -> i32 {
+    let mut x = 0;
+
+    for n in nums.iter() {
+        x ^= *n;
+    }
+
+    x
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
