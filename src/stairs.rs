@@ -49,6 +49,44 @@ pub fn count(number: usize) -> usize {
     result
 }
 
+pub fn fib(n: i32) -> i32 {
+    if n < 0 {
+        return 0;
+    }
+
+    if n == 0 {
+        return 0;
+    }
+
+    if n == 1 {
+        return 1;
+    }
+
+    let mut v: Vec<i32> = vec![0; n as usize + 1];
+    v[1] = 1;
+
+    fib_help(n - 2, &mut v) + fib_help(n - 1, &mut v)
+}
+
+pub fn fib_help(n: i32, m: &mut [i32]) -> i32 {
+    if n == 0 {
+        return 0;
+    }
+
+    if n == 1 {
+        return 1;
+    }
+
+    if m[n as usize] > 0 {
+        return m[n as usize];
+    }
+
+    let v = fib_help(n - 2, m) + fib_help(n - 1, m);
+    m[n as usize] = v;
+
+    v
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -82,5 +120,12 @@ mod tests {
         assert_eq!(max_sub_array(vec![1]), 1);
         assert_eq!(max_sub_array(vec![5, 4, -1, 7, 8]), 23);
         assert_eq!(max_sub_array(vec![-2, 1]), 1);
+    }
+
+    #[test]
+    fn check_fib() {
+        assert_eq!(fib(2), 1);
+        assert_eq!(fib(3), 2);
+        assert_eq!(fib(4), 3);
     }
 }
