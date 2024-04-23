@@ -87,6 +87,30 @@ pub fn fib_help(n: i32, m: &mut [i32]) -> i32 {
     v
 }
 
+pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
+    let mut dp: Vec<i32> = vec![amount + 1; amount as usize + 1];
+
+    dp[0] = 0;
+    for i in 0..dp.len() {
+        for c in coins.iter() {
+            if (i as i32) < *c {
+                continue;
+            }
+
+            let pre: usize = i - (*c as usize);
+            if dp[pre] + 1 < dp[i] {
+                dp[i] = dp[pre] + 1;
+            }
+        }
+    }
+
+    if dp[amount as usize] <= amount {
+        dp[amount as usize]
+    } else {
+        -1
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -127,5 +151,14 @@ mod tests {
         assert_eq!(fib(2), 1);
         assert_eq!(fib(3), 2);
         assert_eq!(fib(4), 3);
+    }
+
+    #[test]
+    fn check_coin_change() {
+        assert_eq!(coin_change(vec![2], 3), -1);
+        assert_eq!(coin_change(vec![1, 2, 5], 11), 3);
+        assert_eq!(coin_change(vec![1, 2, 5], 2), 1);
+        assert_eq!(coin_change(vec![1, 2, 5], 0), 0);
+        assert_eq!(coin_change(vec![3], 2), -1);
     }
 }
