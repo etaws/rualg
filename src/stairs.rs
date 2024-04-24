@@ -134,6 +134,26 @@ pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
     r
 }
 
+pub fn is_subsequence(s: String, t: String) -> bool {
+    let ss: Vec<char> = s.chars().collect();
+    let tt: Vec<char> = t.chars().collect();
+
+    let mut i = 0;
+    let mut j = 0;
+    let mut ec = 0;
+    while i < s.len() && j < t.len() {
+        if ss[i] != tt[j] {
+            j += 1;
+        } else {
+            i += 1;
+            j += 1;
+            ec += 1;
+        }
+    }
+
+    ec == s.len()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -198,5 +218,11 @@ mod tests {
         assert_eq!(generate(5), v);
 
         assert_eq!(generate(1), vec![vec![1]]);
+    }
+
+    #[test]
+    fn check_is_subsequencee() {
+        assert!(is_subsequence("abc".to_string(), "ahbgdc".to_string()),);
+        assert!(!is_subsequence("axc".to_string(), "ahbgdc".to_string()),);
     }
 }
