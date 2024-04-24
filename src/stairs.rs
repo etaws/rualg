@@ -111,6 +111,29 @@ pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
     }
 }
 
+pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+    let n: usize = num_rows as usize;
+
+    let mut r: Vec<Vec<i32>> = Vec::new();
+
+    r.push(vec![1; 1]);
+    let mut count = 2;
+
+    for i in 1..n {
+        let mut dp: Vec<i32> = vec![1; count];
+        let pre: &Vec<i32> = r.get(i - 1).unwrap();
+        for (j, v) in dp.iter_mut().enumerate().take(count - 1).skip(1) {
+            let left = pre.get(j - 1).unwrap();
+            let right = pre.get(j).unwrap();
+            (*v) = *left + *right;
+        }
+        r.push(dp);
+        count += 1;
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -160,5 +183,20 @@ mod tests {
         assert_eq!(coin_change(vec![1, 2, 5], 2), 1);
         assert_eq!(coin_change(vec![1, 2, 5], 0), 0);
         assert_eq!(coin_change(vec![3], 2), -1);
+    }
+
+    #[test]
+    fn check_generate() {
+        let v: Vec<Vec<i32>> = vec![
+            vec![1],
+            vec![1, 1],
+            vec![1, 2, 1],
+            vec![1, 3, 3, 1],
+            vec![1, 4, 6, 4, 1],
+        ];
+
+        assert_eq!(generate(5), v);
+
+        assert_eq!(generate(1), vec![vec![1]]);
     }
 }
