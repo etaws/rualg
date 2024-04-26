@@ -174,6 +174,54 @@ pub fn min_cost_climbing_stairs(cost: Vec<i32>) -> i32 {
     m[cost.len()]
 }
 
+pub fn max_repeating(sequence: String, word: String) -> i32 {
+    if word.len() > sequence.len() {
+        return 0;
+    }
+
+    let ss: Vec<char> = sequence.chars().collect();
+    let tt: Vec<char> = word.chars().collect();
+
+    let mut dp: Vec<i32> = vec![0; ss.len() + 101];
+
+    let mut r = 0;
+    for i in 0..ss.len() {
+        if ss.len() + 1 - i <= tt.len() {
+            break;
+        }
+
+        if ss_match(&ss, i, &tt, tt.len()) {
+            if i >= tt.len() {
+                dp[i] = dp[i - tt.len()] + 1;
+            } else {
+                dp[i] = 1;
+            }
+
+            if r < dp[i] {
+                r = dp[i];
+            }
+        }
+    }
+
+    r
+}
+
+pub fn ss_match(s: &[char], start: usize, t: &[char], len: usize) -> bool {
+    let mut i = start;
+    let mut j = 0;
+
+    while j < len {
+        if s[i] == t[j] {
+            i += 1;
+            j += 1;
+        } else {
+            return false;
+        }
+    }
+
+    true
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -262,5 +310,14 @@ mod tests {
             6
         );
         assert_eq!(min_cost_climbing_stairs(vec![10, 15, 20]), 15);
+    }
+
+    #[test]
+    fn check_max_repeating() {
+        assert_eq!(max_repeating("aa".to_string(), "aa".to_string()), 1);
+        assert_eq!(max_repeating("a".to_string(), "aa".to_string()), 0);
+        assert_eq!(max_repeating("ababc".to_string(), "ac".to_string()), 0);
+        assert_eq!(max_repeating("ababc".to_string(), "ba".to_string()), 1);
+        assert_eq!(max_repeating("ababc".to_string(), "ab".to_string()), 2);
     }
 }
