@@ -154,6 +154,26 @@ pub fn is_subsequence(s: String, t: String) -> bool {
     ec == s.len()
 }
 
+pub fn min_cost_climbing_stairs(cost: Vec<i32>) -> i32 {
+    if cost.is_empty() {
+        return 0;
+    }
+    let mut m: Vec<i32> = vec![0; cost.len() + 1];
+
+    for n in 2..cost.len() + 1 {
+        let p = m[n - 1] + cost[n - 1];
+        let pp = m[n - 2] + cost[n - 2];
+
+        if p < pp {
+            m[n] = p;
+        } else {
+            m[n] = pp;
+        }
+    }
+
+    m[cost.len()]
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -224,5 +244,23 @@ mod tests {
     fn check_is_subsequencee() {
         assert!(is_subsequence("abc".to_string(), "ahbgdc".to_string()),);
         assert!(!is_subsequence("axc".to_string(), "ahbgdc".to_string()),);
+    }
+
+    #[test]
+    fn check_min_cost_climbing_stairs() {
+        assert_eq!(
+            min_cost_climbing_stairs(vec![
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0
+            ]),
+            1
+        );
+        assert_eq!(
+            min_cost_climbing_stairs(vec![1, 100, 1, 1, 1, 100, 1, 1, 100, 1]),
+            6
+        );
+        assert_eq!(min_cost_climbing_stairs(vec![10, 15, 20]), 15);
     }
 }
