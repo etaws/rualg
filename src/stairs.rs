@@ -222,6 +222,28 @@ pub fn ss_match(s: &[char], start: usize, t: &[char], len: usize) -> bool {
     true
 }
 
+pub fn divisor_game(n: i32) -> bool {
+    let i: usize = n as usize;
+    let mut dp: Vec<bool> = vec![false; i + 1];
+    dp[1] = false;
+
+    for j in 2..i + 1 {
+        let mut j_true = false;
+        for k in 1..j {
+            if j % k == 0 {
+                let new_n = j - k;
+                if !dp[new_n] {
+                    j_true = true;
+                    break;
+                }
+            }
+        }
+        dp[j] = j_true;
+    }
+
+    dp[i]
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -319,5 +341,12 @@ mod tests {
         assert_eq!(max_repeating("ababc".to_string(), "ac".to_string()), 0);
         assert_eq!(max_repeating("ababc".to_string(), "ba".to_string()), 1);
         assert_eq!(max_repeating("ababc".to_string(), "ab".to_string()), 2);
+    }
+
+    #[test]
+    fn check_divisor_game() {
+        assert!(!divisor_game(3));
+        assert!(divisor_game(2));
+        assert!(!divisor_game(1));
     }
 }
