@@ -244,6 +244,35 @@ pub fn divisor_game(n: i32) -> bool {
     dp[i]
 }
 
+pub fn tribonacci(n: i32) -> i32 {
+    if n == 0 {
+        return 0;
+    }
+
+    if n == 1 {
+        return 1;
+    }
+
+    if n == 2 {
+        return 1;
+    }
+
+    let mut p = 0;
+    let mut pp = 1;
+
+    let mut ppp = 1;
+
+    for _ in 3..n + 1 {
+        let t = ppp + pp + p;
+
+        p = pp;
+        pp = ppp;
+        ppp = t;
+    }
+
+    ppp
+}
+
 #[cfg(test)]
 mod tests {
 
