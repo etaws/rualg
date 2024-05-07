@@ -273,6 +273,66 @@ pub fn tribonacci(n: i32) -> i32 {
     ppp
 }
 
+pub fn longest_palindrome(s: String) -> String {
+    if s.is_empty() {
+        return s;
+    }
+
+    if s.len() == 1 {
+        return s;
+    }
+
+    let ss: Vec<char> = s.chars().collect();
+    if s.len() == 2 {
+        if ss[0] == ss[1] {
+            return s;
+        } else {
+            return ss[0].to_string();
+        }
+    }
+
+    let len = s.len();
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; len]; len];
+
+    let mut r_s = 0;
+    let mut r_e = 1;
+    for i in 0..len {
+        dp[i][i] = 1;
+    }
+
+    for i in 0..len - 1 {
+        if ss[i] == ss[i + 1] {
+            dp[i][i + 1] = 1;
+            if r_e - r_s == 1 {
+                r_s = i;
+                r_e = i + 2;
+            }
+        }
+    }
+
+    for i in 2..len {
+        for j in 0..len - 1 {
+            let start = j;
+            let end = j + i;
+            if end >= len {
+                break;
+            }
+            if start >= end {
+                break;
+            }
+            if dp[start + 1][end - 1] == 1 && ss[end] == ss[start] {
+                dp[start][end] = 1;
+                if r_e - r_s < end + 1 - start {
+                    r_s = start;
+                    r_e = end + 1;
+                }
+            }
+        }
+    }
+
+    ss[r_s..r_e].iter().collect::<String>().to_string()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -377,5 +437,12 @@ mod tests {
         assert!(!divisor_game(3));
         assert!(divisor_game(2));
         assert!(!divisor_game(1));
+    }
+
+    #[test]
+    fn check_longest_palindrome() {
+        assert_eq!(longest_palindrome("ccc".to_string()), "ccc".to_string());
+        assert_eq!(longest_palindrome("cbbd".to_string()), "bb".to_string());
+        assert_eq!(longest_palindrome("babad".to_string()), "bab".to_string());
     }
 }
