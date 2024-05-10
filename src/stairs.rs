@@ -296,7 +296,7 @@ pub fn longest_palindrome(s: String) -> String {
 
     let mut r_s = 0;
     let mut r_e = 1;
-    for i in 0..len {
+    for (i, _) in (0..len).enumerate() {
         dp[i][i] = 1;
     }
 
