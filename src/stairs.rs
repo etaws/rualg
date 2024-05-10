@@ -358,20 +358,16 @@ pub fn can_jump(nums: Vec<i32>) -> bool {
         return true;
     }
 
-    let mut dp: Vec<i32> = vec![-1; nums.len()];
+    let mut far: usize = 0;
 
-    dp[0] = if nums[0] == 0 { 0 } else { 1 };
-
-    for i in 1..nums.len() {
-        for j in 0..i {
-            if nums[j] as usize >= i - j && dp[j] == 1 {
-                dp[i] = 1;
-                break;
-            }
+    for (i, v) in nums.iter().enumerate() {
+        let step: usize = *v as usize;
+        if far >= i && i + step > far {
+            far = i + step;
         }
     }
 
-    dp[nums.len() - 1] == 1
+    far >= nums.len() - 1
 }
 
 #[cfg(test)]
@@ -571,6 +567,7 @@ mod tests {
 
     #[test]
     fn check_can_jump() {
+        assert!(can_jump(vec![2, 0, 0]));
         assert!(!can_jump(vec![0, 2, 3]));
         assert!(can_jump(vec![0]));
         assert!(can_jump(vec![2, 5, 0, 0]));
