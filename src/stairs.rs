@@ -353,6 +353,27 @@ pub fn jump(nums: Vec<i32>) -> i32 {
     dp[nums.len() - 1]
 }
 
+pub fn can_jump(nums: Vec<i32>) -> bool {
+    if nums.len() == 1 {
+        return true;
+    }
+
+    let mut dp: Vec<i32> = vec![-1; nums.len()];
+
+    dp[0] = if nums[0] == 0 { 0 } else { 1 };
+
+    for i in 1..nums.len() {
+        for j in 0..i {
+            if nums[j] as usize >= i - j && dp[j] == 1 {
+                dp[i] = 1;
+                break;
+            }
+        }
+    }
+
+    dp[nums.len() - 1] == 1
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -546,5 +567,19 @@ mod tests {
         assert_eq!(jump(vec![2, 2, 0, 1]), 2);
         assert_eq!(jump(vec![2, 3, 0, 1, 4]), 2);
         assert_eq!(jump(vec![2, 3, 1, 1, 4]), 2);
+    }
+
+    #[test]
+    fn check_can_jump() {
+        assert!(!can_jump(vec![0, 2, 3]));
+        assert!(can_jump(vec![0]));
+        assert!(can_jump(vec![2, 5, 0, 0]));
+        assert!(!can_jump(vec![3, 2, 1, 0, 4]));
+        assert!(can_jump(vec![2, 3, 1, 1, 4]));
+
+        assert!(can_jump(vec![
+            7, 8, 4, 2, 0, 6, 4, 1, 8, 7, 1, 7, 4, 1, 4, 1, 2, 8, 2, 7, 3, 7, 8, 2, 4, 4, 5, 3, 5,
+            6, 8, 5, 4, 4, 7, 4, 3, 4, 8, 1, 1, 9, 0, 8, 2
+        ]));
     }
 }
