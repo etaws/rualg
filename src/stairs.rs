@@ -337,20 +337,28 @@ pub fn longest_palindrome(s: String) -> String {
 }
 
 pub fn jump(nums: Vec<i32>) -> i32 {
-    let max: i32 = nums.len() as i32;
-    let mut dp: Vec<i32> = vec![max; nums.len()];
+    if nums.len() == 1 {
+        return 0;
+    }
 
-    dp[0] = 0;
+    let mut far: usize = 0;
+    let mut split_pos: usize = 0;
+    let mut r = 0;
 
-    for i in 1..nums.len() {
-        for j in 0..i {
-            if nums[j] as usize >= i - j && dp[i] > dp[j] + 1 {
-                dp[i] = dp[j] + 1;
-            }
+    for (i, v) in nums.iter().enumerate() {
+        if i == nums.len() - 1 {
+            break;
+        }
+        let step: usize = *v as usize;
+        far = far.max(i + step);
+
+        if i == split_pos {
+            split_pos = far;
+            r += 1;
         }
     }
 
-    dp[nums.len() - 1]
+    r
 }
 
 pub fn can_jump(nums: Vec<i32>) -> bool {
@@ -485,6 +493,8 @@ mod tests {
 
     #[test]
     fn check_jump() {
+        assert_eq!(jump(vec![7, 0, 9, 6, 9, 6, 1, 7, 9, 0, 1, 2, 9, 0, 3]), 2);
+
         assert_eq!(
             jump(vec![
                 7, 8, 4, 2, 0, 6, 4, 1, 8, 7, 1, 7, 4, 1, 4, 1, 2, 8, 2, 7, 3, 7, 8, 2, 4, 4, 5, 3,
