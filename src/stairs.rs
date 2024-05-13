@@ -378,11 +378,39 @@ pub fn can_jump(nums: Vec<i32>) -> bool {
     far >= nums.len() - 1
 }
 
+pub fn unique_paths(m: usize, n: usize) -> i32 {
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; m]; n];
+
+    for i in 0..m {
+        dp[0][i] = 1;
+    }
+
+    for (i, _) in (0..n).enumerate() {
+        dp[i][0] = 1;
+    }
+
+    for j in 1..n {
+        for i in 1..m {
+            dp[j][i] = dp[j - 1][i] + dp[j][i - 1];
+        }
+    }
+
+    dp[n - 1][m - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_unique_paths() {
+        assert_eq!(unique_paths(7, 3), 28);
+        assert_eq!(unique_paths(3, 3), 6);
+        assert_eq!(unique_paths(2, 2), 2);
+        assert_eq!(unique_paths(1, 1), 1);
+    }
 
     #[test]
     fn check_strategies() {
