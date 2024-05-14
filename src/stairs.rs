@@ -398,11 +398,56 @@ pub fn unique_paths(m: usize, n: usize) -> i32 {
     dp[n - 1][m - 1]
 }
 
+pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
+    let n = obstacle_grid.len();
+    let m = obstacle_grid[0].len();
+
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; m]; n];
+
+    for i in 0..m {
+        if obstacle_grid[0][i] == 1 {
+            break;
+        }
+        dp[0][i] = 1;
+    }
+
+    for (i, _) in (0..n).enumerate() {
+        if obstacle_grid[i][0] == 1 {
+            break;
+        }
+        dp[i][0] = 1;
+    }
+
+    for j in 1..n {
+        for i in 1..m {
+            if obstacle_grid[j][i] == 1 {
+                dp[j][i] = 0;
+            } else {
+                dp[j][i] = dp[j - 1][i] + dp[j][i - 1];
+            }
+        }
+    }
+
+    dp[n - 1][m - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_unique_paths_with_obstacles() {
+        let v2: Vec<Vec<i32>> = vec![vec![0, 0, 0], vec![0, 1, 0], vec![0, 0, 0]];
+        assert_eq!(unique_paths_with_obstacles(v2), 2);
+
+        let v3: Vec<Vec<i32>> = vec![vec![0, 1], vec![0, 0]];
+        assert_eq!(unique_paths_with_obstacles(v3), 1);
+
+        let v: Vec<Vec<i32>> = vec![vec![0, 1, 1, 0], vec![0, 0, 0, 0]];
+        assert_eq!(unique_paths_with_obstacles(v), 1);
+    }
 
     #[test]
     fn check_unique_paths() {
