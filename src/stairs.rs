@@ -431,11 +431,49 @@ pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
     dp[n - 1][m - 1]
 }
 
+pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
+    let n = grid.len();
+    let m = grid[0].len();
+
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; m]; n];
+
+    let mut t = 0;
+    for i in 0..m {
+        t += grid[0][i];
+        dp[0][i] = t;
+    }
+
+    let mut s = 0;
+    for (i, _) in (0..n).enumerate() {
+        s += grid[i][0];
+        dp[i][0] = s;
+    }
+
+    for j in 1..n {
+        for i in 1..m {
+            let a = dp[j - 1][i];
+            let b = dp[j][i - 1];
+            dp[j][i] = a.min(b) + grid[j][i];
+        }
+    }
+
+    dp[n - 1][m - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_min_path_sum() {
+        let v1: Vec<Vec<i32>> = vec![vec![1, 2, 3], vec![4, 5, 6]];
+        assert_eq!(min_path_sum(v1), 12);
+
+        let v2: Vec<Vec<i32>> = vec![vec![1, 3, 1], vec![1, 5, 1], vec![4, 2, 1]];
+        assert_eq!(min_path_sum(v2), 7);
+    }
 
     #[test]
     fn check_unique_paths_with_obstacles() {
