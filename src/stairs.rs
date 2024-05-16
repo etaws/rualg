@@ -460,11 +460,79 @@ pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     dp[n - 1][m - 1]
 }
 
+pub fn num_decodings(s: String) -> i32 {
+    let a: Vec<char> = s.chars().collect();
+    let mut nums: Vec<i32> = Vec::new();
+    for ch in a {
+        if let Ok(num) = ch.to_string().parse::<i32>() {
+            nums.push(num);
+        }
+    }
+
+    let mut dp: Vec<i32> = vec![0; s.len() + 1];
+    if nums[0] != 0 {
+        dp[0] = 1;
+    }
+
+    if nums.len() == 1 {
+        return dp[0];
+    }
+
+    if nums.len() > 1 {
+        let two = nums[0] * 10 + nums[1];
+
+        if (11..=19).contains(&two) {
+            dp[1] = 2;
+        }
+        if (21..=26).contains(&two) {
+            dp[1] = 2;
+        }
+        if two == 10 || two == 20 {
+            dp[1] = 1;
+        }
+        if two > 26 && nums[1] != 0 {
+            dp[1] = 1;
+        }
+    }
+
+    for i in 2..nums.len() {
+        let mut n = 0;
+        if dp[i - 1] > 0 && nums[i] > 0 {
+            n = dp[i - 1];
+        }
+
+        if dp[i - 2] > 0 {
+            let two = nums[i - 1] * 10 + nums[i];
+            if (10..=26).contains(&two) {
+                n += dp[i - 2];
+            }
+        }
+
+        dp[i] = n;
+    }
+
+    dp[s.len() - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_num_decodings() {
+        assert_eq!(num_decodings("27".to_string()), 1);
+        assert_eq!(num_decodings("12".to_string()), 2);
+        assert_eq!(num_decodings("30".to_string()), 0);
+        assert_eq!(num_decodings("301".to_string()), 0);
+        assert_eq!(num_decodings("207".to_string()), 1);
+        assert_eq!(num_decodings("10".to_string()), 1);
+        assert_eq!(num_decodings("06".to_string()), 0);
+        assert_eq!(num_decodings("11106".to_string()), 2);
+        assert_eq!(num_decodings("227".to_string()), 2);
+        assert_eq!(num_decodings("226".to_string()), 3);
+    }
 
     #[test]
     fn check_min_path_sum() {
