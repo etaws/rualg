@@ -514,11 +514,72 @@ pub fn num_decodings(s: String) -> i32 {
     dp[s.len() - 1]
 }
 
+use std::collections::HashSet;
+
+pub fn check_word_in_dict(a: &Vec<char>, i: usize, j: usize, w: &HashSet<String>) -> bool {
+    if i > j {
+        return false;
+    }
+
+    let str = &a[i..j + 1].iter().collect::<String>();
+
+    w.contains(str)
+}
+
+pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
+    let a: Vec<char> = s.chars().collect();
+    let mut dp: Vec<bool> = vec![false; s.len() + 1];
+
+    let word_set = word_dict.into_iter().collect::<HashSet<_>>();
+
+    for i in 0..s.len() {
+        if check_word_in_dict(&a, 0, i, &word_set) {
+            dp[i] = true;
+            continue;
+        }
+
+        if i > 0 {
+            for j in 0..i {
+                if dp[j] && check_word_in_dict(&a, j + 1, i, &word_set) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    dp[s.len() - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_word_break() {
+        assert!(!word_break(
+            "catsandog".to_string(),
+            vec![
+                "cats".to_string(),
+                "dog".to_string(),
+                "sand".to_string(),
+                "and".to_string(),
+                "cat".to_string()
+            ]
+        ));
+
+        assert!(word_break(
+            "leetcode".to_string(),
+            vec!["leet".to_string(), "code".to_string()]
+        ));
+
+        assert!(word_break(
+            "applepenapple".to_string(),
+            vec!["apple".to_string(), "pen".to_string()]
+        ));
+    }
 
     #[test]
     fn check_num_decodings() {
