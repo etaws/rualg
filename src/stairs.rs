@@ -572,9 +572,7 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
         let b = n.min(min * n);
         min = b.min(m * n);
 
-        if r < max {
-            r = max;
-        }
+        r = r.max(max);
     }
 
     r
