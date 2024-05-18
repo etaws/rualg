@@ -551,11 +551,43 @@ pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
     dp[s.len() - 1]
 }
 
+pub fn max_product(nums: Vec<i32>) -> i32 {
+    if nums.len() == 1 {
+        return nums[0];
+    }
+
+    let mut r = nums[0];
+    let mut min = nums[0];
+    let mut max = nums[0];
+
+    for i in 1..nums.len() {
+        let m = max;
+        let a = nums[i].max(m * nums[i]);
+        max = a.max(min * nums[i]);
+
+        let b = nums[i].min(min * nums[i]);
+        min = b.min(m * nums[i]);
+
+        if r < max {
+            r = max;
+        }
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_max_product() {
+        assert_eq!(max_product(vec![-3, 0, 1, -2]), 1);
+        assert_eq!(max_product(vec![-2, 0, -1]), 0);
+        assert_eq!(max_product(vec![2, 3, -2, 4]), 6);
+    }
 
     #[test]
     fn check_word_break() {
