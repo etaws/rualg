@@ -516,7 +516,7 @@ pub fn num_decodings(s: String) -> i32 {
 
 use std::collections::HashSet;
 
-pub fn check_word_in_dict(a: &Vec<char>, i: usize, j: usize, w: &HashSet<String>) -> bool {
+pub fn check_word_in_dict(a: &[char], i: usize, j: usize, w: &HashSet<String>) -> bool {
     if i > j {
         return false;
     }
@@ -560,13 +560,17 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
     let mut min = nums[0];
     let mut max = nums[0];
 
-    for i in 1..nums.len() {
+    for v in nums.iter().skip(1) {
+        let n: i32 = *v;
         let m = max;
-        let a = nums[i].max(m * nums[i]);
-        max = a.max(min * nums[i]);
 
-        let b = nums[i].min(min * nums[i]);
-        min = b.min(m * nums[i]);
+        // max
+        let a = n.max(m * n);
+        max = a.max(min * n);
+
+        // min
+        let b = n.min(min * n);
+        min = b.min(m * n);
 
         if r < max {
             r = max;
