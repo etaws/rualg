@@ -578,11 +578,58 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
     r
 }
 
+pub fn can_partition(nums: Vec<i32>) -> bool {
+    let sum: i32 = nums.iter().sum();
+    if sum < 0 || sum % 2 != 0 {
+        return false;
+    }
+    let n: usize = (sum / 2) as usize;
+    let mut dp: Vec<bool> = vec![false; n + 1];
+    let mut pp: Vec<bool> = vec![false; n + 1];
+
+    let first_num = nums[0];
+    for (i, pv) in pp.iter_mut().enumerate().skip(1) {
+        if first_num == i as i32 {
+            *pv = true;
+        }
+    }
+
+    for (i, _) in nums.iter().enumerate().skip(1) {
+        dp[0] = true;
+        for j in 1..=n {
+            if pp[j] {
+                dp[j] = true;
+            } else if j as i32 >= nums[i] {
+                let step: usize = (j as i32 - nums[i]) as usize;
+                if pp[step] {
+                    dp[j] = true;
+                }
+            }
+        }
+
+        if dp[n] {
+            return true;
+        }
+
+        pp = dp;
+        dp = vec![false; n + 1];
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_can_partition() {
+        assert!(!can_partition(vec![1, 2, 5]));
+        assert!(!can_partition(vec![1, 2, 3, 5]));
+        assert!(can_partition(vec![1, 5, 11, 5]));
+    }
 
     #[test]
     fn check_max_product() {
