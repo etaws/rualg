@@ -585,23 +585,23 @@ pub fn can_partition(nums: Vec<i32>) -> bool {
     }
     let n: usize = (sum / 2) as usize;
     let mut dp: Vec<bool> = vec![false; n + 1];
-    let mut pp: Vec<bool> = vec![false; n + 1];
 
     let first_num = nums[0];
-    for (i, pv) in pp.iter_mut().enumerate().skip(1) {
+    for (i, dv) in dp.iter_mut().enumerate().skip(1) {
         if first_num == i as i32 {
-            *pv = true;
+            *dv = true;
+            break;
         }
     }
 
+    dp[0] = true;
     for (i, _) in nums.iter().enumerate().skip(1) {
-        dp[0] = true;
-        for j in 1..=n {
-            if pp[j] {
+        for j in (1..=n).rev() {
+            if dp[j] {
                 dp[j] = true;
             } else if j as i32 >= nums[i] {
                 let step: usize = (j as i32 - nums[i]) as usize;
-                if pp[step] {
+                if dp[step] {
                     dp[j] = true;
                 }
             }
@@ -610,9 +610,6 @@ pub fn can_partition(nums: Vec<i32>) -> bool {
         if dp[n] {
             return true;
         }
-
-        pp = dp;
-        dp = vec![false; n + 1];
     }
 
     false
