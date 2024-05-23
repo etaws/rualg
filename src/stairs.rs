@@ -633,11 +633,42 @@ pub fn length_of_lis(nums: Vec<i32>) -> i32 {
     max
 }
 
+pub fn num_squares(n: i32) -> i32 {
+    let nn: usize = n as usize;
+    let mut dp: Vec<usize> = vec![0; nn + 1];
+    dp[0] = 0;
+    dp[1] = 1;
+
+    for i in 1..=nn {
+        let mut j = 1;
+        let mut min = i;
+        while j * j <= i {
+            let step = i - j * j;
+            if min > dp[step] + 1 {
+                min = dp[step] + 1;
+                if min == 1 {
+                    break;
+                }
+            }
+            j += 1;
+        }
+        dp[i] = min;
+    }
+
+    dp[nn] as i32
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_num_squares() {
+        assert_eq!(num_squares(12), 3);
+        assert_eq!(num_squares(13), 2);
+    }
 
     #[test]
     fn check_length_of_lis() {
