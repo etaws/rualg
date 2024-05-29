@@ -658,11 +658,54 @@ pub fn num_squares(n: i32) -> i32 {
     dp[nn] as i32
 }
 
+pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
+    let total: i32 = nums.iter().sum();
+
+    if total < target {
+        return 0;
+    }
+
+    if (total - target) % 2 != 0 {
+        return 0;
+    }
+
+    let t: i32 = (total - target) / 2;
+    if t < 0 {
+        return 0;
+    }
+
+    let n: usize = t as usize;
+    let m = nums.len();
+
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; m + 1]; n + 1];
+
+    dp[0][0] = 1;
+
+    for i in 1..=m {
+        for j in 0..=n {
+            dp[j][i] = dp[j][i - 1];
+            if j as i32 >= nums[i - 1] {
+                let step = (j as i32 - nums[i - 1]) as usize;
+                dp[j][i] += dp[step][i - 1];
+            }
+        }
+    }
+
+    dp[n][m]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_find_target() {
+        assert_eq!(find_target_sum_ways(vec![1, 1, 1, 1, 1], 3), 5);
+        assert_eq!(find_target_sum_ways(vec![1], 1), 1);
+        assert_eq!(find_target_sum_ways(vec![2, 1], 3), 1);
+    }
 
     #[test]
     fn check_num_squares() {
