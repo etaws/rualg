@@ -669,12 +669,7 @@ pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
         return 0;
     }
 
-    let t: i32 = (total - target) / 2;
-    if t < 0 {
-        return 0;
-    }
-
-    let n: usize = t as usize;
+    let n: usize = ((total - target) / 2) as usize;
     let m = nums.len();
 
     let mut dp: Vec<Vec<i32>> = vec![vec![0; m + 1]; n + 1];
@@ -694,6 +689,29 @@ pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
     dp[n][m]
 }
 
+pub fn rob(nums: Vec<i32>) -> i32 {
+    let n = nums.len();
+
+    if n == 1 {
+        return nums[0];
+    }
+
+    let mut dp: Vec<i32> = vec![0; n + 1];
+    dp[0] = nums[0];
+    dp[1] = nums[0];
+    if nums[1] > nums[0] {
+        dp[1] = nums[1]
+    }
+
+    for i in 2..n {
+        let f1 = dp[i - 1];
+        let f2 = nums[i] + dp[i - 2];
+        dp[i] = f1.max(f2);
+    }
+
+    dp[n - 1]
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -705,6 +723,13 @@ mod tests {
         assert_eq!(find_target_sum_ways(vec![1, 1, 1, 1, 1], 3), 5);
         assert_eq!(find_target_sum_ways(vec![1], 1), 1);
         assert_eq!(find_target_sum_ways(vec![2, 1], 3), 1);
+    }
+
+    #[test]
+    fn check_rob() {
+        assert_eq!(rob(vec![2, 7, 9, 3, 1]), 12);
+        assert_eq!(rob(vec![1, 2, 3, 1]), 4);
+        assert_eq!(rob(vec![2, 1]), 2);
     }
 
     #[test]
