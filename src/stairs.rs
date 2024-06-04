@@ -712,11 +712,35 @@ pub fn rob(nums: Vec<i32>) -> i32 {
     dp[n - 1]
 }
 
+pub fn majority_element(nums: Vec<i32>) -> i32 {
+    let mut x = 0;
+    let mut votes = 0;
+
+    for num in nums {
+        if votes == 0 {
+            x = num;
+        }
+        if num == x {
+            votes += 1
+        } else {
+            votes -= 1
+        };
+    }
+
+    x
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_majority_element() {
+        assert_eq!(majority_element(vec![3, 2, 3]), 3);
+        assert_eq!(majority_element(vec![2, 2, 1, 1, 1, 2, 2]), 2);
+    }
 
     #[test]
     fn check_find_target() {
