@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
     let mut r: Vec<Vec<i32>> = Vec::new();
@@ -526,10 +526,60 @@ pub fn remove_invalid_parentheses(s: String) -> Vec<String> {
     rv
 }
 
+pub fn partition_labels(s: String) -> Vec<i32> {
+    let w = string_to_char_array(&s);
+
+    let mut r: Vec<i32> = Vec::new();
+
+    let mut ht: HashMap<char, usize> = HashMap::new();
+
+    for (i, c) in w.iter().enumerate() {
+        ht.insert(*c, i);
+    }
+
+    let mut m = *ht.get(&w[0]).unwrap();
+    let mut n: i32 = 1;
+    let mut j: usize = 0;
+    while j < w.len() {
+        if j == m {
+            r.push(n);
+            n = 1;
+            if j + 1 < w.len() {
+                m = *ht.get(&w[j + 1]).unwrap();
+                j += 1;
+                continue;
+            }
+        }
+
+        let ch = w[j];
+        if let Some(tr) = ht.get(&ch) {
+            if *tr > m {
+                m = *tr;
+            }
+        }
+
+        n += 1;
+        j += 1;
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn check_partition_labels() {
+        assert_eq!(partition_labels("eaaaabaaec".to_string()), vec![9, 1]);
+
+        assert_eq!(
+            partition_labels("ababcbacadefegdehijhklij".to_string()),
+            vec![9, 7, 8]
+        );
+        assert_eq!(partition_labels("eccbbbbdec".to_string()), vec![10]);
+    }
 
     #[test]
     fn check_sub_1() {
