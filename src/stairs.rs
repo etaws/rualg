@@ -730,11 +730,38 @@ pub fn majority_element(nums: Vec<i32>) -> i32 {
     x
 }
 
+pub fn sort_colors(nums: &mut Vec<i32>) {
+    let mut n0 = 0;
+    let mut n1 = 0;
+
+    for i in 0..nums.len() {
+        let num = nums[i];
+        nums[i] = 2;
+
+        if num < 2 {
+            nums[n1] = 1;
+            n1 += 1;
+        }
+
+        if num == 0 {
+            nums[n0] = 0;
+            n0 += 1;
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_sort_colors() {
+        let mut n: Vec<i32> = vec![2, 0, 2, 1, 1, 0];
+        sort_colors(&mut n);
+        assert_eq!(n, vec![0, 0, 1, 1, 2, 2]);
+    }
 
     #[test]
     fn check_majority_element() {
