@@ -180,7 +180,7 @@ pub fn trap(height: Vec<i32>) -> i32 {
             continue;
         }
 
-        let cur = v.pop();
+        //let cur = v.pop();
     }
 
     0

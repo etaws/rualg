@@ -750,11 +750,48 @@ pub fn sort_colors(nums: &mut Vec<i32>) {
     }
 }
 
+pub fn next_permutation(nums: &mut Vec<i32>) {
+    if nums.len() <= 1 {
+        return;
+    }
+
+    let mut i: i32 = nums.len() as i32 - 2;
+    let mut j: i32 = nums.len() as i32 - 1;
+    let mut k = nums.len() - 1;
+
+    while i >= 0 && nums[i as usize] >= nums[j as usize] {
+        i -= 1;
+        j -= 1;
+    }
+
+    if i >= 0 {
+        while nums[i as usize] >= nums[k] {
+            k -= 1;
+        }
+        nums.swap(i as usize, k);
+    }
+
+    let mut ii = j;
+    let mut jj = nums.len() - 1;
+    while ii < jj as i32 {
+        nums.swap(ii as usize, jj);
+        ii += 1;
+        jj -= 1;
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_next_permutation() {
+        let mut n: Vec<i32> = vec![2, 1];
+        next_permutation(&mut n);
+        assert_eq!(n, vec![1, 2]);
+    }
 
     #[test]
     fn check_sort_colors() {
