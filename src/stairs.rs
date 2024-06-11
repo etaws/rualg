@@ -780,11 +780,47 @@ pub fn next_permutation(nums: &mut Vec<i32>) {
     }
 }
 
+pub fn find_duplicate(nums: Vec<i32>) -> i32 {
+    let mut slow = 0;
+    let mut fast = 0;
+    slow = nums[slow as usize];
+    fast = nums[nums[fast as usize] as usize];
+
+    while slow != fast {
+        if slow as usize >= nums.len() {
+            return -1;
+        }
+        slow = nums[slow as usize];
+
+        if nums[fast as usize] as usize >= nums.len() {
+            return -1;
+        }
+        fast = nums[nums[fast as usize] as usize];
+    }
+
+    let mut p: i32 = 0;
+    let mut target: i32 = slow;
+    while p != target {
+        p = nums[p as usize];
+        target = nums[target as usize];
+    }
+
+    p
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_find_duplicate() {
+        assert_eq!(find_duplicate(vec![1, 2, 3]), -1);
+        assert_eq!(find_duplicate(vec![3, 3, 3, 3, 3]), 3);
+        assert_eq!(find_duplicate(vec![3, 1, 3, 4, 2]), 3);
+        assert_eq!(find_duplicate(vec![1, 3, 4, 2, 2]), 2);
+    }
 
     #[test]
     fn check_next_permutation() {
