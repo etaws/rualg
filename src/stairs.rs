@@ -808,11 +808,52 @@ pub fn find_duplicate(nums: Vec<i32>) -> i32 {
     p
 }
 
+pub fn longest_common_subsequence(text1: String, text2: String) -> i32 {
+    let n = text1.len();
+    let m = text2.len();
+    let text1: Vec<char> = text1.chars().collect();
+    let text2: Vec<char> = text2.chars().collect();
+
+    let mut f: Vec<Vec<i32>> = vec![vec![0; m + 1]; n + 1];
+
+    for i in 1..=n {
+        for j in 1..=m {
+            if text1[i - 1] == text2[j - 1] {
+                f[i][j] = f[i - 1][j - 1] + 1;
+            } else {
+                f[i][j] = i32::max(f[i - 1][j], f[i][j - 1]);
+            }
+        }
+    }
+
+    f[n][m]
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_longest_common_subsequence() {
+        assert_eq!(
+            longest_common_subsequence("abc".to_string(), "def".to_string()),
+            0
+        );
+        assert_eq!(
+            longest_common_subsequence("abc".to_string(), "abc".to_string()),
+            3
+        );
+        assert_eq!(
+            longest_common_subsequence("abcde".to_string(), "ace".to_string()),
+            3
+        );
+        assert_eq!(
+            longest_common_subsequence("ABCBDAB".to_string(), "BDCABC".to_string()),
+            4
+        );
+    }
 
     #[test]
     fn check_find_duplicate() {
