@@ -280,27 +280,24 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
 }
 
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    let mut s: HashMap<i32, usize> = HashMap::new();
+    let mut r = Vec::new();
+    let mut hp = HashMap::new();
+    for (i, n) in nums.iter().enumerate() {
+        hp.insert(*n, i as i32);
+    }
 
-    for (j, n) in nums.iter().enumerate() {
-        let another = target - n;
-
-        if s.get(&another).is_some() {
-            let one = j;
-            let two = *(s.get(&another).unwrap());
-
-            // 返回的时候规范一下：总是小的数放在前面
-            if one > two {
-                return vec![two as i32, one as i32];
-            } else {
-                return vec![one as i32, two as i32];
+    for (i, n) in nums.iter().enumerate() {
+        let e = target - *n;
+        if let Some(j) = hp.get(&e) {
+            if *j != i as i32 {
+                r.push(i as i32);
+                r.push(*j);
+                break;
             }
-        } else {
-            s.insert(*n, j);
         }
     }
 
-    vec![0, 0]
+    r
 }
 
 pub fn seek_two(a: &[i32], target: i32) -> (usize, usize) {
@@ -493,6 +490,13 @@ pub fn find_num(u: u64, s: &[u8]) -> Option<usize> {
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn check_two_sum_1() {
+        assert_eq!(two_sum(vec![3, 3], 6), [0, 1]);
+        assert_eq!(two_sum(vec![3, 2, 4], 6), [1, 2]);
+        assert_eq!(two_sum(vec![2, 7, 11, 15], 9), [0, 1]);
+    }
 
     #[test]
     fn check_seek_two_1() {
