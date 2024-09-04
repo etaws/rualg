@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashMap};
 
 pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
     let mut r: Vec<Vec<i32>> = Vec::new();
@@ -585,9 +585,47 @@ pub fn find_min(nums: Vec<i32>) -> i32 {
     nums[i]
 }
 
+pub fn sort_string(s: &str) -> String {
+    let mut chars: Vec<char> = s.chars().collect();
+    chars.sort();
+    chars.into_iter().collect()
+}
+
+pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
+    let mut hp: HashMap<String, Vec<String>> = HashMap::new();
+
+    for s in strs.into_iter() {
+        let ss = sort_string(&s);
+
+        if let Some(k) = hp.get_mut(&ss) {
+            k.push(s);
+        } else {
+            hp.insert(ss, vec![s]);
+        }
+    }
+
+    hp.into_values().collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn check_select_group_anagrams() {
+        let r = group_anagrams(vec![
+            "eat".to_string(),
+            "tea".to_string(),
+            "tan".to_string(),
+            "ate".to_string(),
+            "nat".to_string(),
+            "bat".to_string(),
+        ]);
+
+        assert_eq!(r.len(), 3);
+
+        dbg!(r);
+    }
 
     #[test]
     fn check_select_sort() {
