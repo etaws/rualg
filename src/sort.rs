@@ -607,9 +607,44 @@ pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
     hp.into_values().collect()
 }
 
+pub fn move_zeroes(nums: &mut Vec<i32>) {
+    let len = nums.len();
+
+    let mut i = 0;
+    let mut j = 0;
+
+    while i < len {
+        if nums[i] != 0 {
+            if nums[j] == 0 {
+                nums[j] = nums[i];
+                nums[i] = 0;
+                j += 1;
+            }
+        } else if nums[j] != 0 {
+            j = i;
+        }
+
+        i += 1;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn check_move_zeroes() {
+        let mut a = vec![0, 1, 0, 3, 12];
+        move_zeroes(&mut a);
+        assert_eq!(a, vec![1, 3, 12, 0, 0]);
+    }
+
+    #[test]
+    fn check_move_zeroes_more() {
+        let mut a = vec![1, 0, 1];
+        move_zeroes(&mut a);
+        assert_eq!(a, vec![1, 1, 0]);
+    }
 
     #[test]
     fn check_select_group_anagrams() {
