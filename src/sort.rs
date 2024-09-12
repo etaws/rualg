@@ -628,9 +628,35 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
     }
 }
 
+pub fn max_area(height: Vec<i32>) -> i32 {
+    let mut i = 0;
+    let mut j = height.len() - 1;
+
+    let mut r = 0;
+    while i <= j {
+        let low = height[i].min(height[j]) as usize;
+        let c = (j - i) * low;
+        r = r.max(c);
+
+        if low == height[i] as usize {
+            i += 1;
+        } else {
+            j -= 1;
+        }
+    }
+
+    r as i32
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn check_max_area() {
+        assert_eq!(max_area(vec![1, 8, 6, 2, 5, 4, 8, 3, 7]), 49);
+        assert_eq!(max_area(vec![1, 1]), 1);
+    }
 
     #[test]
     fn check_move_zeroes() {
