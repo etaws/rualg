@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 
 pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
@@ -486,10 +487,65 @@ pub fn find_num(u: u64, s: &[u8]) -> Option<usize> {
     Some(sn.len() - 1)
 }
 
+pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut r: Vec<Vec<i32>> = Vec::new();
+    let mut nums = nums;
+    nums.sort_unstable();
+
+    if nums.len() <= 2 {
+        return r;
+    }
+
+    for i in 0..nums.len() {
+        if nums[i] > 0 {
+            return r;
+        }
+        if i > 0 && nums[i - 1] == nums[i] {
+            continue;
+        }
+
+        let mut j = i + 1;
+        let mut k = nums.len() - 1;
+
+        while j < k {
+            let sum = nums[i] + nums[j] + nums[k];
+            match sum.cmp(&0) {
+                Ordering::Equal => {
+                    r.push(vec![nums[i], nums[j], nums[k]]);
+                    while j < k && nums[j] == nums[j + 1] {
+                        j += 1;
+                    }
+                    j += 1;
+                    while k > j && nums[k] == nums[k - 1] {
+                        k -= 1;
+                    }
+                    k -= 1;
+                }
+                Ordering::Greater => {
+                    k -= 1;
+                }
+                Ordering::Less => {
+                    j += 1;
+                }
+            }
+        }
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn check_three_sum() {
+        let b = three_sum(vec![-1, 0, 1, 2, -1, -4]);
+        assert_eq!(b.len(), 2);
+        assert_eq!(b[0], vec![-1, -1, 2]);
+        assert_eq!(b[1], vec![-1, 0, 1]);
+    }
 
     #[test]
     fn check_two_sum_1() {
