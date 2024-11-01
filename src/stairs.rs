@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 pub fn max_sub_array(nums: Vec<i32>) -> i32 {
     let mut pre: i32 = -10000;
     let mut max: i32 = nums[0];
@@ -514,8 +516,6 @@ pub fn num_decodings(s: String) -> i32 {
     dp[s.len() - 1]
 }
 
-use std::collections::HashSet;
-
 pub fn check_word_in_dict(a: &[char], i: usize, j: usize, w: &HashSet<String>) -> bool {
     if i > j {
         return false;
@@ -858,11 +858,69 @@ pub fn min_distance(word1: String, word2: String) -> i32 {
     dp[m][n] as i32
 }
 
+fn string_to_char_array(s: &str) -> Vec<char> {
+    s.chars().collect()
+}
+
+pub fn length_of_longest_substring(s: String) -> i32 {
+    if s.is_empty() {
+        return 0;
+    }
+
+    if s.len() == 1 {
+        return 1;
+    }
+
+    let w = string_to_char_array(&s);
+
+    // Create a Map to record the correspondence between each character and its next position.
+    let mut vtd: HashMap<char, usize> = HashMap::new();
+    // e.g. w[0] -> 1
+    vtd.insert(w[0], 1);
+
+    let mut r = 1;
+    let mut head = 0;
+    let mut p: usize = 1;
+
+    while p < s.len() {
+        let c = w[p];
+        match vtd.get(&c) {
+            // if the map contains the char, remove all chars before the head from the map
+            Some(next) => {
+                let tp = *next;
+                while head < tp {
+                    vtd.remove(&w[head]);
+                    head += 1;
+                }
+            }
+            None => {
+                p += 1;
+                if r < p - head {
+                    r = p - head;
+                }
+                vtd.insert(c, p);
+            }
+        }
+    }
+
+    r as i32
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_longest_sub() {
+        assert_eq!(length_of_longest_substring("dvdf".to_string()), 3);
+        assert_eq!(length_of_longest_substring("pwwkew".to_string()), 3);
+        assert_eq!(length_of_longest_substring("abcabcbb".to_string()), 3);
+        assert_eq!(length_of_longest_substring("bbbbb".to_string()), 1);
+        assert_eq!(length_of_longest_substring("".to_string()), 0);
+        assert_eq!(length_of_longest_substring("a".to_string()), 1);
+    }
 
     #[test]
     fn check_min_distance() {
