@@ -906,11 +906,64 @@ pub fn length_of_longest_substring(s: String) -> i32 {
     r as i32
 }
 
+fn string_to_bytes_array(s: &str) -> Vec<u8> {
+    s.bytes().collect()
+}
+
+pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
+    let mut r: Vec<i32> = Vec::new();
+
+    if s.len() < p.len() {
+        return r;
+    }
+
+    let mut p_cnt: Vec<i32> = vec![0; 26];
+    for c in p.bytes() {
+        p_cnt[(c - b'a') as usize] += 1;
+    }
+
+    let mut s_cnt: Vec<i32> = vec![0; 26];
+    let cs = string_to_bytes_array(&s);
+    let mut head: usize = 0;
+    let mut tail: usize = 0;
+
+    while tail < s.len() {
+        let c: usize = (cs[tail] - b'a') as usize;
+        s_cnt[c] += 1;
+        while s_cnt[c] > p_cnt[c] {
+            let c_head: usize = (cs[head] - b'a') as usize;
+            s_cnt[c_head] -= 1;
+            head += 1;
+        }
+
+        if (tail >= head) && (tail - head + 1 == p.len()) {
+            r.push(head as i32);
+        }
+
+        tail += 1;
+    }
+
+    r
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn check_find_anagrams() {
+        assert_eq!(
+            find_anagrams("cbaebabacd".to_string(), "abc".to_string()),
+            vec![0, 6]
+        );
+
+        assert_eq!(
+            find_anagrams("abab".to_string(), "ab".to_string()),
+            vec![0, 1, 2]
+        );
+    }
 
     #[test]
     fn check_longest_sub() {
