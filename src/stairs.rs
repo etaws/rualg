@@ -917,22 +917,22 @@ pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
         return r;
     }
 
-    let mut p_cnt: Vec<i32> = vec![0; 26];
+    let mut cnt: Vec<i32> = vec![0; 26];
+
     for c in p.bytes() {
-        p_cnt[(c - b'a') as usize] += 1;
+        cnt[(c - b'a') as usize] -= 1;
     }
 
-    let mut s_cnt: Vec<i32> = vec![0; 26];
     let cs = string_to_bytes_array(&s);
     let mut head: usize = 0;
     let mut tail: usize = 0;
 
     while tail < s.len() {
         let c: usize = (cs[tail] - b'a') as usize;
-        s_cnt[c] += 1;
-        while s_cnt[c] > p_cnt[c] {
+        cnt[c] += 1;
+        while cnt[c] > 0 {
             let c_head: usize = (cs[head] - b'a') as usize;
-            s_cnt[c_head] -= 1;
+            cnt[c_head] -= 1;
             head += 1;
         }
 
